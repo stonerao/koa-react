@@ -1,7 +1,13 @@
 const router = require('koa-router')()
 const query = require("../sql/index")
-const reptile = require("../reptile/index")
+// const reptile = require("../reptile/index")
+
 router.get('/', async (ctx, next) => {
+  /* let res = await reptile.crawling().then(res => {
+    return res
+  }) */
+  
+
   let res = await query("SELECT * FROM member").then(res => {
     return res
   })
