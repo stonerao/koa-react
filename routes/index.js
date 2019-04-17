@@ -5,9 +5,7 @@ const query = require("../sql/index")
 router.get('/', async (ctx, next) => {
   /* let res = await reptile.crawling().then(res => {
     return res
-  }) */
-  
-
+  }) */ 
   let res = await query("SELECT * FROM member").then(res => {
     return res
   })
