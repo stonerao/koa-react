@@ -3,13 +3,9 @@ const query = require("../sql/index")
 // const reptile = require("../reptile/index")
 
 router.get('/', async (ctx, next) => {
-  /* let res = await reptile.crawling().then(res => {
-    return res
-  }) */ 
-  let res = await query("SELECT * FROM member").then(res => {
-    return res
-  })
-  ctx.body = res
+  ctx.body = {
+    title: 'koa2 json'
+  }
 })
 
 router.get('/string', async (ctx, next) => {
