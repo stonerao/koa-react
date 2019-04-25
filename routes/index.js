@@ -1,6 +1,5 @@
 const router = require('koa-router')()
-const query = require("../sql/index")
-// const reptile = require("../reptile/index")
+const query = require("../sql/index") 
 
 router.get('/', async (ctx, next) => {
   ctx.body = {
