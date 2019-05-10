@@ -1,0 +1,2 @@
+//登录时存储的COOKIE TYPE
+exports.LOGIN_COOKIE_TYPE = "TOKEN_JS"

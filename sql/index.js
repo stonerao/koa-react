@@ -1,9 +1,9 @@
 var mysql = require('mysql');
 var connection = mysql.createConnection({
-    host: '47.98.160.248',
-    user: 'express',
-    password: 'Raoyan19940529',
-    database: 'express'
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'sass'
 });
 connection.connect(); 
 
