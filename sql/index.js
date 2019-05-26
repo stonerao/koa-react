@@ -5,7 +5,7 @@ var connection = mysql.createConnection({
     password: 'Raoyan19940529',
     database: 'express'
 });
-connection.connect(); 
+connection.connect();
 
 module.exports = (sql) => {
     return new Promise((resolve, reject) => {

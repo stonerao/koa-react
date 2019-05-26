@@ -1,6 +1,8 @@
 const router = require('koa-router')()
 const reptile = require("../reptile/index")
 const query = require("../sql/index")
+// require('./api/test')
+
 router.prefix('/api')
 const isToday = (str) => {
     if (new Date(str).toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10)) {
@@ -13,7 +15,7 @@ const isToday = (str) => {
 }
 
 router.get('/', function (ctx, next) {
-    ctx.body = "看锤子看";
+    ctx.body = "看锤子看2";
 })
 
 router.get('/getStore', async (ctx, next) => {
