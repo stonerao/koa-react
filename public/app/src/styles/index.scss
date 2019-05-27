@@ -1,0 +1,85 @@
+ @import './reset.scss';
+ @import './base.scss';
+
+ .header {
+     .header-base {
+         line-height: $header-height;
+         height: $header-height;
+         display: inline-block;
+         float: left;
+         position: relative;
+     }
+
+     height: $header-height;
+     width: 100%;
+     position: relative;
+     background-image: url('../assets/images/head.png');
+     background-size: cover;
+
+     .header-minisiter {
+         height: $header-height;
+         line-height: $header-height;
+         display: inline-block;
+     }
+
+     .header-logo {
+         @extend .header-base;
+         vertical-align: middle;
+         width: 167px;
+         height: 51px;
+         width: 241px;
+
+         img {
+             margin-left: 45px;
+         }
+     }
+
+     .header-title {
+         @extend .header-base;
+         font-size: 32px;
+         font-family: PingFangSC-Semibold;
+         font-weight: 600;
+         color: rgba(255, 255, 255, 1);
+         text-shadow: 0px 1px 6px rgba(7, 23, 49, 0.7);
+     }
+
+     .header-items {
+         float: right;
+         height: $header-height;
+         min-width: 200px;
+     }
+
+     .header-item {}
+ }
+
+ .App-main {
+     position: absolute;
+     top: $header-height;
+     left: 0;
+     right: 0;
+     bottom: 0;
+ }
+
+ $menu-width:180px;
+
+ .menu {
+     position: absolute;
+     top: 0;
+     left: 0;
+     bottom: 0;
+     padding-top: 10px;
+     width: $menu-width - 1;
+     border-right: 1px solid #ededed; 
+     .menu-item {
+         padding: 0 10px 0 15px;
+         line-height: 30px;
+     }
+ }
+
+ .main {
+     position: absolute;
+     left: $menu-width;
+     right: 0;
+     top: 0;
+     bottom: 0;
+ }

@@ -1,0 +1,46 @@
+@import './base.scss';
+
+.m-login {
+    @extend .full;
+    // position: absolute;
+    background: url(../assets/images/deep.jpg) no-repeat 100% 100%;
+}
+
+.m-login--img {
+    position: absolute;
+    left: 314px;
+    top: 240px;
+}
+
+.m-login-box {
+    $padding: 30px;
+    position: absolute;
+    width: 406px - $padding*2;
+    height: 466px - $padding*2;
+    background-image: url(../assets/images/login-box.png);
+    background-size: 100% 100%;
+    padding: $padding;
+    left: 50%;
+    top: 25%;
+}
+
+.m-login-title {
+    text-align: center;
+    font-size: 25px;
+    font-family: SourceHanSansCN-Bold;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
+    line-height: 38px;
+    margin-top: 30px;
+    margin-bottom: 38px;
+}
+
+.m-login-inp {
+    margin-top: 20px;
+}
+
+.m-not-pass {
+    text-align: right;
+    color: #fff;
+    line-height: 30px;
+}

@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from 'antd';
-import Menus from '../component/menu'
-class App extends Component {
+import HeaderComponent from '../component/header'
+class App extends Component { 
     render() {
         return (
             <div className="App">
-                <Menus></Menus>
-                <div className="main">
+                <HeaderComponent> </HeaderComponent> 
+                <div className="App-main">
                     {this.props.children}
                 </div>
             </div>
         );
     }
 }
+
 export default App;

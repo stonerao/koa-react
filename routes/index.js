@@ -1,12 +1,9 @@
 const router = require('koa-router')()
-const query = require("../sql/index")
+// const query = require("../sql/index")
 // const reptile = require("../reptile/index")
-const sql = require("../sql/sql")
-router.get('/', async (ctx, next) => {
-  sql.reg()
-  ctx.body = {
-    title: 'koa2 json'
-  }
+// const sql = require("../sql/sql")
+router.get('/', async (ctx, next) => { 
+  ctx.body = "?"
 })
 
 router.get('/string', async (ctx, next) => {
