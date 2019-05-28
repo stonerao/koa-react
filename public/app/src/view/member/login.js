@@ -33,7 +33,7 @@ class App extends Component {
             username: username,
             password: password
         }).then(res => {
-            if (res.code == 200) {
+            if (res.code === 200) {
                 message.success('登录成功');
                 this.props.history.push("/home")
             } else {

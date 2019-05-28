@@ -6,10 +6,10 @@ axios.interceptors.response.use(res => {
     }
 
 }, (err) => {
-    switch (err.response.status) {
+   /*  switch (err.response.status) {
         case 404:
             break
-    }
+    } */
 })
  
 export default axios;

@@ -7,6 +7,7 @@ const Login = _async(() => import('./view/member/login'));
 const Reg = _async(() => import('./view/member/reg'));
 const Topo = _async(() => import('./view/webgl/topo'));
 const TopoEdit = _async(() => import('./view/webgl/topo-edit'));
+const MapCom = _async(() => import('./view/webgl/map'));
 
 const BasicRoute = () => (
     <HashRouter>
@@ -18,6 +19,7 @@ const BasicRoute = () => (
                     <Route path="/home" render={() =>
                         <Index>
                             <Route path="/home/topo" component={Topo}></Route>
+                            <Route path="/home/map" component={MapCom}></Route>
                             <Route path="/home/topoEdit" component={TopoEdit}></Route>
                         </Index>
                     }>

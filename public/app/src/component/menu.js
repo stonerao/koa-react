@@ -6,28 +6,22 @@ class App extends Component {
         this.state = {
             menu: [
                 {
-                    name: "3D Topo",
+                    name: "Map",
+                    url: "/home/map"
+                },
+                {
+                    name: "Topo",
                     url: "/home/topo"
                 },
                 {
-                    name: "3D Topo Edit",
+                    name: "Topo Edit",
                     url: "/home/topoEdit"
                 },
                 {
-                    name: "2D Topo",
-                    url: "/home/topo_two"
-                }, {
-                    name: "3D Graph",
-                    url: "/home/graph"
-                },
-                {
-                    name: "3D Graph Edit",
-                    url: "/home/graph_edit"
-                },
-                {
-                    name: "2D Graph",
+                    name: "Graph",
                     url: "/home/graph_two"
-                }
+                },
+                 
             ]
         }
     }
