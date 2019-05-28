@@ -5,7 +5,7 @@ class App extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            msg: "绵阳师范学院网络安全态势系统",
+            msg: "测试系统",
             btns: [
                 {
                     icon: "icon-baomuleixing"
