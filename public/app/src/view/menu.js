@@ -1,4 +1,4 @@
-import React, { Component } from 'react'; 
+import React, { Component } from 'react';
 import Menus from '../component/menu'
 class App extends Component {
     render() {
@@ -6,7 +6,7 @@ class App extends Component {
             <div className="App">
                 <Menus></Menus>
                 <div className="main">
-                   
+
                 </div>
             </div>
         );

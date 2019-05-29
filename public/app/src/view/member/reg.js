@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Input, message } from 'antd';
+import { Button, Input, message, Icon } from 'antd';
 import "../../styles/member.scss"
 import LoginImg from '../../assets/images/login-text.png'
 import axios from '../../utils/axios'
+import ScrollPlan from '../../component/scroll'
 class App extends Component {
     constructor() {
         super()
@@ -53,31 +54,36 @@ class App extends Component {
     }
     render() {
         return (
-            <div className="m-login">
-                <img src={LoginImg} alt="一览众山小" className="m-login--img" />
-                <div className="m-login-box">
-                    <div className="m-login-title">
-                        欢迎光临
+            <ScrollPlan>
+                <div className="m-login">
+                    <div className="m-login--img">
+
                     </div>
-                    <div className="m-login-inp">
-                        <Input placeholder="账户" value={this.state.username} onChange={this.userChange} />
+                    <div className="m-login-box">
+                        <div className="m-login-title">
+                            STONE ADMIN
                     </div>
-                    <div className="m-login-inp">
-                        <Input.Password placeholder="密码" value={this.state.password} onChange={this.passChange} />
-                    </div>
-                    <div className="m-login-inp">
-                        <Input.Password placeholder="确认密码" value={this.state.subPassword} onChange={this.subPasswordChange} />
-                    </div>
-                    <div className="m-not-pass">
-                        <Link to="/login">去登陆</Link>
-                    </div>
-                    <div className="m-login-inp">
-                        <Button type="primary" block onClick={this.submit}>
-                            Login
-                        </Button>
+                        <div className="m-login-inp">
+                            <Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="账户" size="large" value={this.state.username} onChange={this.userChange} />
+                        </div>
+                        <div className="m-login-inp">
+                            <Input.Password prefix={<Icon type="eye-invisible" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="密码" size="large" value={this.state.password} onChange={this.passChange} />
+                        </div>
+                        <div className="m-login-inp">
+                            <Input.Password prefix={<Icon type="eye-invisible" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="确认密码" size="large" value={this.state.subPassword} onChange={this.subPasswordChange} />
+                        </div>
+
+                        <div className="m-login-inp">
+                            <Button type="primary" block onClick={this.submit} size="large">
+                                注册
+                            </Button>
+                        </div>
+                        <div className="m-not-pass">
+                            <Link to="/login">登陆</Link>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </ScrollPlan>
         );
     }
 }

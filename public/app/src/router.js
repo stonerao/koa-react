@@ -1,24 +1,25 @@
 import React from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import _async from './utils/async'
 const Home = _async(() => import('./view/home.js'));
 const Index = _async(() => import('./view/index.js'));
 const Login = _async(() => import('./view/member/login'));
 const Reg = _async(() => import('./view/member/reg'));
-const Topo = _async(() => import('./view/webgl/topo'));
+const summary = _async(() => import('./view/summary'));
 const TopoEdit = _async(() => import('./view/webgl/topo-edit'));
 const MapCom = _async(() => import('./view/webgl/map'));
 
 const BasicRoute = () => (
-    <HashRouter>
+    <BrowserRouter>
         <Switch>
             <Route path="/" render={() =>
                 <Home>
-                    <Route path="/login" component={Login}></Route>
-                    <Route path="/reg" component={Reg}></Route>
+                    <Route exact path="/" render={() => (
+                        <Redirect to="/home/summary" />
+                    )} />
                     <Route path="/home" render={() =>
                         <Index>
-                            <Route path="/home/topo" component={Topo}></Route>
+                            <Route path="/home/summary" component={summary}></Route>
                             <Route path="/home/map" component={MapCom}></Route>
                             <Route path="/home/topoEdit" component={TopoEdit}></Route>
                         </Index>
@@ -26,6 +27,8 @@ const BasicRoute = () => (
                     </Route>
                 </Home>
             }></Route>
+            <Route path="/login" component={Login}></Route>
+            <Route path="/reg" component={Reg}></Route>
 
             {/* <Route path="/menu" render={() =>
                 <Home>
@@ -33,7 +36,7 @@ const BasicRoute = () => (
                 </Home>
             }></Route> */}
         </Switch>
-    </HashRouter>
+    </BrowserRouter>
 );
 
 export default BasicRoute;

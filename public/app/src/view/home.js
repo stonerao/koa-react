@@ -5,7 +5,7 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <HeaderComponent> </HeaderComponent> 
+                {/* <HeaderComponent> </HeaderComponent>  */}
                 <div className="App-main">
                     {this.props.children}
                 </div>

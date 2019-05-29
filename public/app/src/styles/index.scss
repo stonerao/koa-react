@@ -67,12 +67,58 @@
      top: 0;
      left: 0;
      bottom: 0;
-     padding-top: 10px;
+     //  padding-top: 10px;
      width: $menu-width - 1;
-     border-right: 1px solid #ededed; 
+     border-right: 1px solid #ededed;
+     background: #00152a;
+
+     .menu-level {
+         text-indent: 15px;
+     }
+
+     .menu-title {
+         color: #fff;
+         padding: 10px 20px;
+         font-size: 18px;
+         font-weight: bold;
+         border-bottom: #0c345d 1px solid;
+     }
+
      .menu-item {
-         padding: 0 10px 0 15px;
-         line-height: 30px;
+         $lineheight: 40px;
+
+         //  padding: 0 10px 0 15px;  
+         .menu-exent {
+             color: #cfcfcf;
+             display: inline-block;
+             width: 100%;
+             padding: 0 20px;
+             line-height: $lineheight;
+             user-select: none;
+         }
+
+
+         a {
+             @extend .menu-exent;
+         }
+
+         .menu-node {
+             @extend .menu-exent;
+             cursor: pointer;
+             display: flex;
+             justify-content: space-between;
+
+             i {
+                 line-height: $lineheight
+             }
+
+         }
+
+         .active {
+             background: #1b9fee;
+
+             color: #fff;
+         }
      }
  }
 
@@ -82,9 +128,50 @@
      right: 0;
      top: 0;
      bottom: 0;
+     background: #f4f6f8
  }
- .canvas-click-name{
+
+ .canvas-click-name {
      position: absolute;
-     top:20px;
-     left:20px;
+     top: 20px;
+     left: 20px;
+ }
+
+ $hh: 50px;
+
+ .menu-history {
+     height: $hh;
+     padding: 0 15px;
+     position: relative;
+     z-index: 20;
+
+     .menu-history-item {
+         $h: 32px;
+         height: $h;
+         line-height: $h;
+         background: #fff;
+         border-radius: 3px;
+         display: inline-block;
+         padding: 0 10px;
+         margin-top: ($hh - $h)/2;
+         cursor: pointer;
+         transition: all .2s;
+
+         i {
+             margin-left: 10px;
+
+         }
+
+         &:hover {
+             box-shadow: 0 0 6px #aaa;
+         }
+     }
+ }
+
+ .main-box {
+     position: absolute;
+     top: $hh + 5px;
+     left: 0;
+     right: 0;
+     bottom: 0;
  }
