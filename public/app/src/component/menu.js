@@ -16,7 +16,7 @@ class App extends Component {
                     show: true,
                     children: [
                         {
-                            name: "权限管理",
+                            name: "部门管理",
                             url: "/home/duties"
                         },
                         {
@@ -30,11 +30,12 @@ class App extends Component {
                     show: true,
                     children: [
                         {
-                            name: "文章发布",
-                            url: "/home/articleUp"
-                        }, {
                             name: "文章列表",
                             url: "/home/article"
+                        },
+                        {
+                            name: "文章发布",
+                            url: "/home/articleUp"
                         }
                     ]
                 }, {

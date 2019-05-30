@@ -1,41 +1,7 @@
 import React, { Component } from 'react';
-import { Input, Icon, Table, Button, Modal } from 'antd';
-const columns = [
-    {
-        title: '角色',
-        dataIndex: 'name'
-    },
-    {
-        title: '操作',
-        dataIndex: 'set',
-        render: tags => (
-            <Button shape="circle" icon="delete" />
-        ),
-        width: 100,
-    },
-];
-const data = [
-    {
-        key: '1',
-        name: 'John Brown',
-        address: "123"
-    },
-    {
-        key: '2',
-        name: 'Jim Green',
-        address: 'London No. 1 Lake Park',
-    },
-    {
-        key: '3',
-        name: 'Joe Black',
-        address: 'Sidney No. 1 Lake Park',
-    },
-    {
-        key: '4',
-        name: 'Disabled User',
-        set: 'Sidney No. 1 Lake Park',
-    },
-];
+import { Input, Icon, Table, Button, Modal, message } from 'antd';
+import axios from '../../utils/axios';
+const confirm = Modal.confirm;
 
 // rowSelection object indicates the need for row selection
 
@@ -48,24 +14,79 @@ class duties extends Component {
         this.state = {
             pagination: {
                 current: 1,
-                pageSize: 20,
+                pageSize: 10,
+                total: 20,
                 size: "small"
             },
             visible: false,
-            search: {
-                user: ""
-            },
-            tableSelect: []
+            depName: "",
+            tableSelect: [],
+            data: [],
+            searchValue: "",
         }
+        this.getList()
+    }
+    columns = [
+        {
+            title: '部门名',
+            dataIndex: 'name'
+        },
+        {
+            title: '操作',
+            dataIndex: 'set',
+            render: (text, record) => (
+                <Button shape="circle" icon="delete" onClick={(e, r) => { this.showDeleteConfirm(text, record) }} />
+            ),
+            width: 100,
+        },
+    ]
+    getList() {
+        axios.get("/api/member/getDep", {
+            params: {
+                current: this.state.pagination.current,
+                size: this.state.pagination.pageSize,
+                search: this.state.searchValue
+            }
+        }).then(res => {
+            if (res.code === 200) {
+                this.state.pagination.total = res.total;
+
+                let data = res.list.map(node => ({
+                    ...node,
+                    key: node.Id
+                }))
+                this.setState({
+                    pagination: this.state.pagination,
+                    data: data
+                })
+            } else {
+
+            }
+        })
+    }
+    deleteDep() {
+
     }
     componentDidUpdate() {
 
     }
     handleOk = e => {
-        console.log(this.state.search)
-        this.setState({
-            visible: false
+
+        axios.post("/api/member/addDep", {
+            name: this.state.depName
+        }).then(res => {
+            console.log(res)
+            if (res.code === 200) {
+                message.success("添加成功")
+                /*   this.setState({
+                      visible: false
+                  }) */
+            } else {
+                message.error(res.msg)
+            }
         })
+
+
     }
     handleCancel = e => {
         // 关闭 
@@ -76,6 +97,9 @@ class duties extends Component {
     pageChange = e => {
         this.setState({
             pagination: e
+        })
+        setTimeout(() => {
+            this.getList()
         })
     }
     componentWillMount() {
@@ -98,45 +122,80 @@ class duties extends Component {
             name: record.name,
         }),
     };
-    search = () => {
-        let user = $("#search-user").value;
-        let search = {
-            user: user
-        }
-        console.log(search)
-    }
-    addUser = event => {
-        let search = {
-            ...this.state.search,
-            user: event.target.value
-        }
+    searchChange = (event) => {
         this.setState({
-            search: search
+            searchValue: event.target.value
         })
     }
-     
+    search = (event) => {
+        this.getList()
+    }
+    addUser = event => {
+        this.setState({
+            depName: event.target.value
+        })
+    }
+    delete = (e) => {
+        axios.post("/api/member/deleteDep", {
+            id: e
+        }).then(res => {
+            if (res.code === 200) {
+                this.getList()
+            }
+        })
+    }
+    showDeleteConfirm = (text, record) => {
+        confirm({
+            title: 'Are you sure delete this task?',
+            content: 'Some descriptions',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk: () => {
+                this.delete(record.Id)
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    }
+    deleteBtn = () => {
+        confirm({
+            title: 'Are you sure delete this task?',
+            content: 'Some descriptions',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk: () => {
+                this.delete(this.state.tableSelect.map(n => n.Id).join())
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+
+    }
     render() {
         return (
             <div className="c-box">
                 {/* 搜索 */}
                 <div className="m-people">
                     <div>
-                        <span>权限名：</span>
-                        <Input id="search-user" />
+                        <span>部门名：</span>
+                        <Input id="search-user" onChange={this.searchChange} />
                     </div>
 
                     <div>
-                        <Icon onClick={this.search} type="search" className="cur" style={{ fontSize: "18px", lineHeight: "36px" }} />
+                        <Icon onClick={this.search} value={this.state.searchValue} type="search" className="cur" style={{ fontSize: "18px", lineHeight: "36px" }} />
                     </div>
-
                 </div>
                 {/* 列表 */}
                 <div className="m-people-tale">
                     <div className="m-people--add">
                         <Button type="primary" className="m-r m-l" onClick={() => { this.addUserBtn() }}>添加</Button>
-                        <Button>删除</Button>
+                        <Button onClick={this.deleteBtn}>删除</Button>
                     </div>
-                    <Table onChange={this.pageChange} pagination={this.state.pagination} rowSelection={this.rowSelection} columns={columns} dataSource={data} />
+                    <Table onChange={this.pageChange} pagination={this.state.pagination} rowSelection={this.rowSelection} columns={this.columns} dataSource={this.state.data} />
                 </div>
                 <Modal
                     title="新增人员"
@@ -148,10 +207,10 @@ class duties extends Component {
                         <Input
                             prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                             placeholder="Username"
-                            value={this.state.search.user} onChange={this.addUser}
+                            value={this.state.depName} onChange={this.addUser}
                         />
                     </div>
-                     
+
                 </Modal>
             </div>
         );

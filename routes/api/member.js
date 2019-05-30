@@ -2,6 +2,7 @@ const router = require('koa-router')()
 const query = require("../../sql/index")
 const SQL = require("../../sql/sql")
 const SQL_TABLE_NAME = "member"
+const SQL_DEP_NAME = "department"
 const { aesEncrypt } = require("../../utils/md5")
 const { GetCurrentDate, getDay } = require("../../utils/base")
 let testMatch = /^\w\w{5,15}$/
@@ -114,5 +115,74 @@ router.get('/retrieve', function (ctx, next) {
     //输入注册时填入的账号密码
     //重新填写密码
     ctx.body = "找回密码";
+})
+router.post("/addDep", async (ctx, next) => {
+    let { name } = ctx.request.body;
+    if (!name) {
+        ctx.body = {
+            code: 200,
+            msg: "请输入正确的部门名！"
+        }
+        return
+    }
+    // 判断数据库是否有
+    const _SQL = SQL._select(SQL_DEP_NAME, { name: name }) //查询
+    const INSERT_SQL = SQL._insert({ name: name }, SQL_DEP_NAME) //插入
+    const data = await query(_SQL)
+    if (data.length === 0) {
+        const row = await query(INSERT_SQL)
+        if (row.affectedRows !== 0) {
+            ctx.body = {
+                code: 200,
+            }
+        } else {
+            ctx.body = {
+                code: 400,
+                msg: "发生不可预知的错误！"
+            }
+        }
+    } else {
+        ctx.body = {
+            code: 400,
+            msg: "已存在"
+        }
+    }
+
+})
+router.post("/deleteDep",async(ctx,next)=>{ 
+    let { id } = ctx.request.body;
+    if (!id) {
+        ctx.body = {
+            msg: "error", coed: 400
+        }
+        return
+    }
+    let data = await query(`delete from ${SQL_DEP_NAME} where id in (${id})`)
+    console.log(data)
+    if (data.affectedRows !== 0) {
+        ctx.body = {
+            code: 200,
+            msg: "删除成功！"
+        }
+    } else {
+        ctx.body = {
+            code: 400,
+            msg: "error"
+        }
+    }
+})
+router.get("/getDep", async (ctx, next) => {
+    const { current, size, search } = ctx.query; 
+    const COUNT_SQL = `SELECT COUNT(Id) FROM ${SQL_DEP_NAME} ${search == "" ? '' : `WHERE name LIKE '%${search}%'`}`
+    let counts = await query(COUNT_SQL) 
+    const count = Object.values(counts[0])[0]
+    let _GET_SQL = `SELECT * FROM ${SQL_DEP_NAME} ${search != '' ? `WHERE name LIKE '%${search}%' ` : ''}order by id desc limit ${(current - 1) * size},${size}`
+    const list = await query(_GET_SQL)
+    console.log(list)
+    ctx.body = {
+        code:200,
+        list: list,
+        total: count
+    }
 })
 module.exports = router
