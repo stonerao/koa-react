@@ -17,11 +17,24 @@ class App extends Component {
                     children: [
                         {
                             name: "权限管理",
-                            url: "/t"
+                            url: "/home/duties"
                         },
                         {
-                            name: "角色管理",
-                            url: "/t1"
+                            name: "人员管理",
+                            url: "/home/people"
+                        }
+                    ]
+                }, {
+                    name: "文章管理",
+                    url: "",
+                    show: true,
+                    children: [
+                        {
+                            name: "文章发布",
+                            url: "/home/articleUp"
+                        }, {
+                            name: "文章列表",
+                            url: "/home/article"
                         }
                     ]
                 }, {

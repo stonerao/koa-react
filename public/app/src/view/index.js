@@ -4,9 +4,7 @@ import React, { Component } from 'react';
 import Menus from '../component/menu'
 import Historys from '../component/history'
 class App extends Component {
-    constructor() {
-        super()
-    }
+     
     componentDidMount() {
         /* console.log(this.props)
         let ws = new WebSocket("ws://localhost:3002/test");

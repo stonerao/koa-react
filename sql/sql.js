@@ -47,6 +47,9 @@ module.exports = {
         const _sql = sqlWhere.join(" and ")
         return `SELECT * from ${tname} WHERE BINARY ${_sql};`
     },
+    _count(tname) {
+        return `SELECT COUNT(Id) FROM ${tname} `
+    },
     reg(data) {
         return this._insert(data, "member")
     },

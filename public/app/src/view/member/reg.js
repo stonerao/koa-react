@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Input, message, Icon } from 'antd';
-import "../../styles/member.scss"
-import LoginImg from '../../assets/images/login-text.png'
+import "../../styles/member.scss" 
 import axios from '../../utils/axios'
 import ScrollPlan from '../../component/scroll'
 class App extends Component {

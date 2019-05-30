@@ -10,6 +10,7 @@ const index = require('./routes/index')
 const users = require('./routes/users')
 const api = require('./routes/api')
 const api_member = require('./routes/api/member') 
+const management = require('./routes/api/management') 
 
 const ws = require("./routes/socket/index")
 // error handler
@@ -40,6 +41,7 @@ app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 app.use(api.routes(), api.allowedMethods())
 app.use(api_member.routes(), api_member.allowedMethods())
+app.use(management.routes(), management.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

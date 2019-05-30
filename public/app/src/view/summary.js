@@ -3,7 +3,10 @@ class App extends Component {
     render() {
         return (
             <div className="full">
-                
+                <div>
+                    
+                </div>
+                <div></div>
             </div>
         );
     }
