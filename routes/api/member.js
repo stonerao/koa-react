@@ -127,7 +127,7 @@ router.post("/addDep", async (ctx, next) => {
     }
     // 判断数据库是否有
     const _SQL = SQL._select(SQL_DEP_NAME, { name: name }) //查询
-    const INSERT_SQL = SQL._insert({ name: name }, SQL_DEP_NAME) //插入
+    const INSERT_SQL = SQL._insert({ name: name, date: GetCurrentDate() }, SQL_DEP_NAME) //插入
     const data = await query(_SQL)
     if (data.length === 0) {
         const row = await query(INSERT_SQL)
@@ -149,7 +149,7 @@ router.post("/addDep", async (ctx, next) => {
     }
 
 })
-router.post("/deleteDep",async(ctx,next)=>{ 
+router.post("/deleteDep", async (ctx, next) => {
     let { id } = ctx.request.body;
     if (!id) {
         ctx.body = {
@@ -158,7 +158,7 @@ router.post("/deleteDep",async(ctx,next)=>{
         return
     }
     let data = await query(`delete from ${SQL_DEP_NAME} where id in (${id})`)
-    console.log(data)
+
     if (data.affectedRows !== 0) {
         ctx.body = {
             code: 200,
@@ -171,16 +171,59 @@ router.post("/deleteDep",async(ctx,next)=>{
         }
     }
 })
+router.post("/editDep", async (ctx, next) => {
+    let { id, name } = ctx.request.body;
+    if (!id || !name) {
+        ctx.body = {
+            msg: "error", coed: 400
+        }
+        return
+    }
+    const _SELECT_SQL = SQL._select(SQL_DEP_NAME, { Id: id })
+    const data = await query(_SELECT_SQL)
+    if (data.length != 0) {
+        const _UPDATE_SQL = SQL._update({ Id: id }, { name: name, date: GetCurrentDate() }, SQL_DEP_NAME)
+        const update_code = await query(_UPDATE_SQL)
+        ctx.body = update_code
+        if (update_code.affectedRows != 0) {
+            ctx.body = {
+                code: 200,
+                msg: "修改成功"
+            }
+        } else {
+            ctx.body = {
+                code: 400,
+                msg: "修改失败"
+            }
+        }
+    } else {
+        ctx.body = {
+            code: 400,
+            msg: "修改失败"
+        }
+    }
+    /* if (data.affectedRows !== 0) {
+        ctx.body = {
+            code: 200,
+            msg: "删除成功！"
+        }
+    } else {
+        ctx.body = {
+            code: 400,
+            msg: "error"
+        }
+    } */
+})
 router.get("/getDep", async (ctx, next) => {
-    const { current, size, search } = ctx.query; 
+    const { current, size, search } = ctx.query;
     const COUNT_SQL = `SELECT COUNT(Id) FROM ${SQL_DEP_NAME} ${search == "" ? '' : `WHERE name LIKE '%${search}%'`}`
-    let counts = await query(COUNT_SQL) 
+    let counts = await query(COUNT_SQL)
     const count = Object.values(counts[0])[0]
     let _GET_SQL = `SELECT * FROM ${SQL_DEP_NAME} ${search != '' ? `WHERE name LIKE '%${search}%' ` : ''}order by id desc limit ${(current - 1) * size},${size}`
     const list = await query(_GET_SQL)
     console.log(list)
     ctx.body = {
-        code:200,
+        code: 200,
         list: list,
         total: count
     }

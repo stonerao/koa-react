@@ -23,6 +23,8 @@ class duties extends Component {
             tableSelect: [],
             data: [],
             searchValue: "",
+            isEdit: false,
+            editId: null
         }
         this.getList()
     }
@@ -35,13 +37,16 @@ class duties extends Component {
             title: '操作',
             dataIndex: 'set',
             render: (text, record) => (
-                <Button shape="circle" icon="delete" onClick={(e, r) => { this.showDeleteConfirm(text, record) }} />
+                <div>
+                    <Button shape="circle" icon="delete" onClick={(e, r) => { this.showDeleteConfirm(text, record) }} />
+                    <Button shape="circle" className="m-l" icon="edit" onClick={(e, r) => { this.showEditConfirm(text, record) }} />
+                </div>
             ),
-            width: 100,
+            width: 130,
         },
     ]
-    getList() {
-        axios.get("/api/member/getDep", {
+    async getList() {
+        await axios.get("/api/member/getDep", {
             params: {
                 current: this.state.pagination.current,
                 size: this.state.pagination.pageSize,
@@ -50,7 +55,6 @@ class duties extends Component {
         }).then(res => {
             if (res.code === 200) {
                 this.state.pagination.total = res.total;
-
                 let data = res.list.map(node => ({
                     ...node,
                     key: node.Id
@@ -71,27 +75,55 @@ class duties extends Component {
 
     }
     handleOk = e => {
+        const { isEdit } = this.state;
+        if (!isEdit) {
+            //添加部门
+            axios.post("/api/member/addDep", {
+                name: this.state.depName
+            }).then(res => {
+                if (res.code === 200) {
+                    message.success("添加成功")
+                    this.getList().then(() => {
+                        this.setState({
+                            visible: false,
+                            depName: ""
+                        })
+                    })
 
-        axios.post("/api/member/addDep", {
-            name: this.state.depName
-        }).then(res => {
-            console.log(res)
-            if (res.code === 200) {
-                message.success("添加成功")
-                /*   this.setState({
-                      visible: false
-                  }) */
-            } else {
-                message.error(res.msg)
-            }
-        })
+                } else {
+                    message.error(res.msg)
+                }
+            })
+        } else {
+            //修改部门
+            const { editId } = this.state;
+            axios.post("/api/member/editDep", {
+                name: this.state.depName,
+                id: editId
+            }).then(res => {
+                if (res.code === 200) {
+                    message.success("修改成功")
+                    this.getList().then(() => {
+                        this.setState({
+                            visible: false,
+                            editId: null,
+                            depName: ""
+                        })
+                    })
+
+                } else {
+                    message.error(res.msg)
+                }
+            })
+        }
 
 
     }
     handleCancel = e => {
         // 关闭 
         this.setState({
-            visible: false
+            visible: false,
+            depName:""
         })
     }
     pageChange = e => {
@@ -107,7 +139,8 @@ class duties extends Component {
     }
     addUserBtn() {
         this.setState({
-            visible: true
+            visible: true,
+            isEdit: false
         })
     }
     rowSelection = {
@@ -159,6 +192,14 @@ class duties extends Component {
             },
         });
     }
+    showEditConfirm = (text, record) => {
+        this.setState({
+            isEdit: true,
+            visible: true,
+            editId: record.Id,
+            depName:record.name
+        })
+    }
     deleteBtn = () => {
         confirm({
             title: 'Are you sure delete this task?',
@@ -198,7 +239,7 @@ class duties extends Component {
                     <Table onChange={this.pageChange} pagination={this.state.pagination} rowSelection={this.rowSelection} columns={this.columns} dataSource={this.state.data} />
                 </div>
                 <Modal
-                    title="新增人员"
+                    title={this.state.isEdit ? '修改部门' : '添加部门'}
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}

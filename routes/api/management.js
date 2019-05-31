@@ -71,11 +71,10 @@ router.get('/getList', async (ctx, next) => {
         }
         return
     }
-    //查询无条件
-    let count_sql = SQL._count(SQL_TABLE_NAME)
-    let search_count = `SELECT COUNT(Id) FROM management WHERE title LIKE'%${search}%' `
+    //查询无条件 
+    let search_count = `SELECT COUNT(*) FROM management${search != '' ? ` WHERE title LIKE'%${search}%'` : ''}`
     //查询总数
-    let counts = await query(search == '' ? count_sql : search_count)
+    let counts = await query(search_count)
     const count = Object.values(counts[0])[0]
     //查询需要的条数
     let _GET_SQL = `SELECT * FROM ${SQL_TABLE_NAME} ${search != '' ? `WHERE title LIKE '%${search}%' ` : ''}order by id desc limit ${(current - 1) * size},${size}`
@@ -87,5 +86,7 @@ router.get('/getList', async (ctx, next) => {
         count: count
     }
 })
-
+router.post("/editTitle", async (ctx, next) => {
+    const { id, title } = ctx.request.body;
+})
 module.exports = router
