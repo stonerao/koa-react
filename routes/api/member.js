@@ -46,7 +46,7 @@ router.post('/reg', async (ctx, next) => {
         let data = await query(_INSERT_SQL).then(res => {
             return res;
         })
-        if (data.insertId > 0) {
+        if (data.affectedRows > 0) {
             //插入成功
             ctx.body = {
                 code: 200,
@@ -221,7 +221,6 @@ router.get("/getDep", async (ctx, next) => {
     const count = Object.values(counts[0])[0]
     let _GET_SQL = `SELECT * FROM ${SQL_DEP_NAME} ${search != '' ? `WHERE name LIKE '%${search}%' ` : ''}order by id desc limit ${(current - 1) * size},${size}`
     const list = await query(_GET_SQL)
-    console.log(list)
     ctx.body = {
         code: 200,
         list: list,

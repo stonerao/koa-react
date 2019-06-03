@@ -11,6 +11,7 @@ const users = require('./routes/users')
 const api = require('./routes/api')
 const api_member = require('./routes/api/member') 
 const management = require('./routes/api/management') 
+const personnel = require('./routes/api/personnel') 
 
 const ws = require("./routes/socket/index")
 // error handler
@@ -42,6 +43,7 @@ app.use(users.routes(), users.allowedMethods())
 app.use(api.routes(), api.allowedMethods())
 app.use(api_member.routes(), api_member.allowedMethods())
 app.use(management.routes(), management.allowedMethods())
+app.use(personnel.routes(), personnel.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

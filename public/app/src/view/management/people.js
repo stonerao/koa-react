@@ -1,19 +1,7 @@
 import React, { Component } from 'react';
 import { Input, Icon, Table, Button, Modal } from 'antd';
-const columns = [
-    {
-        title: 'Name',
-        dataIndex: 'name'
-    },
-    {
-        title: 'Age',
-        dataIndex: 'age',
-    },
-    {
-        title: 'Address',
-        dataIndex: 'address',
-    },
-];
+import axios from '../../utils/axios';
+
 const data = [
     {
         key: '1',
@@ -53,6 +41,7 @@ class people extends Component {
             pagination: {
                 current: 1,
                 pageSize: 20,
+                total: 10,
                 size: "small"
             },
             visible: false,
@@ -64,15 +53,69 @@ class people extends Component {
             },
             tableSelect: []
         }
+        this.getList(this.state.search)
+    }
+    columns = [
+        {
+            title: '姓名',
+            dataIndex: 'name'
+        },
+        {
+            title: '操作',
+            dataIndex: 'set',
+            render: (text, record) => (
+                <div>
+                    <Button shape="circle" icon="delete" onClick={(e, r) => { this.showDeleteConfirm(text, record) }} />
+                    <Button shape="circle" className="m-l" icon="edit" onClick={(e, r) => { this.showEditConfirm(text, record) }} />
+                </div>
+            ),
+            width: 130,
+        },
+    ]
+    showEditConfirm = () => {
+
+    }
+    showDeleteConfirm = () => {
+
     }
     componentDidUpdate() {
 
     }
-    handleOk = e => {
-        console.log(this.state.search)
-        this.setState({
-            visible: false
+    getList(search) {
+        const { current, pageSize } = this.state.pagination;
+        const { user, age, phone, duties } = search;
+        axios("/api/personnel/getList", {
+            params: {
+                current: current,
+                size: pageSize,
+                username: user,
+                age, phone,
+                duties
+            }
         })
+    }
+    clearAddedContent = () => {
+        /* clear added mode content value */
+        for (let key in this.state.search) {
+            this.state.search[key] = ""
+        }
+        this.setState({
+            visible: false,
+            search: this.state.search
+        })
+    }
+    handleOk = e => {
+        const { user, age, duties, phone } = this.state.search;
+        axios.post("/api/personnel/add", {
+            username: user,
+            age: age,
+            phone: phone,
+            duties: duties
+        }).then(res => {
+            console.log(res)
+        })
+
+
     }
     handleCancel = e => {
         // 关闭 
@@ -113,10 +156,11 @@ class people extends Component {
         let search = {
             user: user,
             phone: phone,
-            age: duties,
-            duties: age
+            age: age,
+            duties: duties 
         }
-        console.log(search)
+        this.getList(search)
+
     }
     addUser = event => {
         let search = {
@@ -186,7 +230,7 @@ class people extends Component {
                         <Button type="primary" className="m-r m-l" onClick={() => { this.addUserBtn() }}>添加</Button>
                         <Button>删除</Button>
                     </div>
-                    <Table onChange={this.pageChange} pagination={this.state.pagination} rowSelection={this.rowSelection} columns={columns} dataSource={data} />
+                    <Table onChange={this.pageChange} pagination={this.state.pagination} rowSelection={this.rowSelection} columns={this.columns} dataSource={data} />
                 </div>
                 <Modal
                     title="新增人员"

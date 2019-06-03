@@ -47,6 +47,14 @@ module.exports = {
         const _sql = sqlWhere.join(" and ")
         return `SELECT * from ${tname} WHERE BINARY ${_sql};`
     },
+    _multi_query(data, tname, current, size) {
+        let data_arr = [];
+        for (let key in data) {
+            data_arr.push(`${key} LIKE '%${data[key]}%'`)
+        }
+        const MULTIPLE = data_arr.join(" and ")
+        return `SELECT * FROM personnel${data_arr.length > 0 ?' WHERE':''} ${MULTIPLE} order by id desc limit ${current},${size}`
+    },
     _count(tname) {
         return `SELECT COUNT(Id) FROM ${tname} `
     },
