@@ -1,34 +1,8 @@
 import React, { Component } from 'react';
-import { Input, Icon, Table, Button, Modal } from 'antd';
+import { Input, Icon, Table, Button, Modal, Select, message } from 'antd';
 import axios from '../../utils/axios';
-
-const data = [
-    {
-        key: '1',
-        name: 'John Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-    },
-    {
-        key: '2',
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-    },
-    {
-        key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sidney No. 1 Lake Park',
-    },
-    {
-        key: '4',
-        name: 'Disabled User',
-        age: 99,
-        address: 'Sidney No. 1 Lake Park',
-    },
-];
-
+const { Option } = Select;
+const confirm = Modal.confirm;
 // rowSelection object indicates the need for row selection
 
 let $ = (name) => {
@@ -40,7 +14,7 @@ class people extends Component {
         this.state = {
             pagination: {
                 current: 1,
-                pageSize: 20,
+                pageSize: 10,
                 total: 10,
                 size: "small"
             },
@@ -51,14 +25,40 @@ class people extends Component {
                 age: "",
                 duties: ""
             },
-            tableSelect: []
+            tableSelect: [],
+            data: [],
+            deps: [],
+            selectDuites: "",
+            s_duites: "",
+            isEdit: false,
+            selectId: null
         }
-        this.getList(this.state.search)
+
+        this.getDeps().then(res => {
+            this.getList(this.state.search)
+        })
     }
     columns = [
         {
             title: '姓名',
-            dataIndex: 'name'
+            dataIndex: 'username',
+            width: 500
+        },
+        {
+            title: '年龄',
+            dataIndex: 'age'
+        },
+        {
+            title: '手机',
+            dataIndex: 'phone'
+        },
+        {
+            title: '职位',
+            dataIndex: 'dutiesName'
+        },
+        {
+            title: '添加时间',
+            dataIndex: 'date'
         },
         {
             title: '操作',
@@ -72,14 +72,51 @@ class people extends Component {
             width: 130,
         },
     ]
-    showEditConfirm = () => {
-
+    messages(msg, state) {
+        if (state === 2) {
+            message.success(msg);
+        } else {
+            message.success(msg);
+        }
     }
-    showDeleteConfirm = () => {
-
+    showEditConfirm = (text, row) => {
+        this.state.search.user = row.username
+        this.state.search.age = row.age
+        this.state.search.phone = row.phone
+        this.setState({
+            visible: true,
+            isEdit: true,
+            selectDuites: +row.duties,
+            search: this.state.search,
+            selectId: row.Id
+        })
+    }
+    showDeleteConfirm = (text, record) => {
+        confirm({
+            title: 'Are you sure delete this task?',
+            content: 'Some descriptions',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk: () => {
+                this.delete(record.Id)
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     }
     componentDidUpdate() {
 
+    }
+    async getDeps() {
+        await axios("/api/member/getDeps").then(async (res) => {
+            if (res.code == 200) {
+                await this.setState({
+                    deps: res.data
+                })
+            }
+        })
     }
     getList(search) {
         const { current, pageSize } = this.state.pagination;
@@ -92,6 +129,24 @@ class people extends Component {
                 age, phone,
                 duties
             }
+        }).then(res => {
+            if (res.code === 200) {
+                let data = res.list.map((elem) => {
+                    const duites = this.state.deps.filter(d => elem.duties == d.Id)[0]
+
+                    const duitesName = duites ? duites.name : ""
+                    return {
+                        ...elem,
+                        key: elem.Id,
+                        dutiesName: duitesName
+                    }
+                })
+                this.state.pagination.total = res.total;
+                this.setState({
+                    data: data,
+                    pagination: this.state.pagination
+                })
+            }
         })
     }
     clearAddedContent = () => {
@@ -101,31 +156,62 @@ class people extends Component {
         }
         this.setState({
             visible: false,
-            search: this.state.search
+            search: this.state.search,
+            selectDuites: "",
+            isEdit: false
         })
     }
     handleOk = e => {
-        const { user, age, duties, phone } = this.state.search;
-        axios.post("/api/personnel/add", {
-            username: user,
-            age: age,
-            phone: phone,
-            duties: duties
-        }).then(res => {
-            console.log(res)
-        })
+        const { isEdit } = this.state;
+        const { user, age, phone } = this.state.search;
+        if (!isEdit) {
+            //added
+            axios.post("/api/personnel/add", {
+                username: user,
+                age: age,
+                phone: phone,
+                duties: this.state.selectDuites
+            }).then(res => {
+                if (res.code === 200) {
+                    this.clearAddedContent();
+                    this.getList(this.state.search)
+                    this.messages("添加成功")
+                } else {
+                    this.messages("添加失败", 2)
+                }
+            })
+        } else {
+            // edit 
+            axios.post("/api/personnel/edit", {
+                username: user,
+                age: age,
+                phone: phone,
+                duties: this.state.selectDuites,
+                id: this.state.selectId
+            }).then(res => {
+                if (res.code === 200) {
+                    this.clearAddedContent();
+                    this.getList(this.state.search)
+                    this.messages("修改成功")
+                } else {
+                    this.messages(res.msg, 2)
+                }
+            })
+        }
 
 
     }
     handleCancel = e => {
         // 关闭 
-        this.setState({
-            visible: false
-        })
+        this.clearAddedContent()
+
     }
     pageChange = e => {
         this.setState({
             pagination: e
+        })
+        setTimeout(() => {
+            this.getList(this.state.search)
         })
     }
     componentWillMount() {
@@ -139,7 +225,7 @@ class people extends Component {
     rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             this.setState({
-                tableSelect: selectedRows
+                tableSelect: selectedRows.map(elem => elem.Id).join()
             })
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
         },
@@ -149,15 +235,16 @@ class people extends Component {
         }),
     };
     search = () => {
+
         let user = $("#search-user").value;
         let phone = $("#search-phone").value;
-        let duties = $("#search-duties").value;
+        let duties = this.state.s_duites;
         let age = $("#search-age").value;
         let search = {
             user: user,
             phone: phone,
             age: age,
-            duties: duties 
+            duties: duties
         }
         this.getList(search)
 
@@ -189,6 +276,7 @@ class people extends Component {
             search: search
         })
     }
+
     addDuties = event => {
         let search = {
             ...this.state.search,
@@ -197,6 +285,39 @@ class people extends Component {
         this.setState({
             search: search
         })
+    }
+    dutiesChange = (e) => {
+        this.setState({
+            selectDuites: e
+        })
+    }
+    delete = (e) => {
+        axios.post("/api/personnel/delete", {
+            id: e
+        }).then(res => {
+            if (res.code === 200) {
+                this.clearAddedContent();
+                this.getList(this.state.search)
+                this.messages(res.msg)
+            } else {
+                this.messages(res.msg, 2)
+            }
+        })
+    }
+    deleteUserBtn = () => {
+        confirm({
+            title: 'Are you sure delete this task?',
+            content: 'Some descriptions',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk: () => {
+                this.delete(this.state.tableSelect)
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     }
     render() {
         return (
@@ -213,7 +334,14 @@ class people extends Component {
                     </div>
                     <div>
                         <span >职位：</span>
-                        <Input id="search-duties" />
+                        <Select placeholder="duites" style={{ width: '100%' }} onChange={(e) => { this.state.s_duites = e }}>
+                            {
+                                this.state.deps.map(elem => {
+                                    return <Option key={elem.Id} value={elem.Id}>{elem.name}</Option>
+                                })
+                            }
+                        </Select>
+                        {/* <Input id="search-duties" /> */}
                     </div>
                     <div>
                         <span>年龄：</span>
@@ -228,12 +356,12 @@ class people extends Component {
                 <div className="m-people-tale">
                     <div className="m-people--add">
                         <Button type="primary" className="m-r m-l" onClick={() => { this.addUserBtn() }}>添加</Button>
-                        <Button>删除</Button>
+                        <Button onClick={() => { this.deleteUserBtn() }}>删除</Button>
                     </div>
-                    <Table onChange={this.pageChange} pagination={this.state.pagination} rowSelection={this.rowSelection} columns={this.columns} dataSource={data} />
+                    <Table onChange={this.pageChange} pagination={this.state.pagination} rowSelection={this.rowSelection} columns={this.columns} dataSource={this.state.data} />
                 </div>
                 <Modal
-                    title="新增人员"
+                    title={this.state.isEdit ? '修改' : '新增'}
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
@@ -259,12 +387,21 @@ class people extends Component {
                             value={this.state.search.phone} onChange={this.addPhone}
                         />
                     </div>
-                    <div>
+                    {/* <div>
                         <Input
                             prefix={<Icon type="flag" style={{ color: 'rgba(0,0,0,.25)' }} />}
                             placeholder="duties"
                             value={this.state.search.duties} onChange={this.addDuties}
-                        /></div>
+                        /></div> */}
+                    <div>
+                        <Select allowClear={true} value={this.state.selectDuites} placeholder="duites" style={{ width: '100%' }} onChange={this.dutiesChange}>
+                            {
+                                this.state.deps.map(elem => {
+                                    return <Option key={elem.Id} value={elem.Id}>{elem.name}</Option>
+                                })
+                            }
+                        </Select>
+                    </div>
                 </Modal>
             </div>
         );

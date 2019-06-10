@@ -53,7 +53,10 @@ module.exports = {
             data_arr.push(`${key} LIKE '%${data[key]}%'`)
         }
         const MULTIPLE = data_arr.join(" and ")
-        return `SELECT * FROM personnel${data_arr.length > 0 ?' WHERE':''} ${MULTIPLE} order by id desc limit ${current},${size}`
+        return `SELECT * FROM ${tname}${data_arr.length > 0 ? ' WHERE' : ''} ${MULTIPLE} order by id desc limit ${current},${size}`
+    },
+    _multi_data(tname) {
+        return `SELECT * FROM ${tname} order by id desc`
     },
     _count(tname) {
         return `SELECT COUNT(Id) FROM ${tname} `
@@ -61,5 +64,8 @@ module.exports = {
     reg(data) {
         return this._insert(data, "member")
     },
+    deleteId(tname, id) {
+        return `delete from ${tname} where id in (${id})`
+    }
 
 }

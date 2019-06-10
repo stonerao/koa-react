@@ -227,4 +227,23 @@ router.get("/getDep", async (ctx, next) => {
         total: count
     }
 })
+router.get("/getDeps", async (ctx) => {
+    let _QUERY_SQL = SQL._multi_data(SQL_DEP_NAME)
+    let list = null;
+    try {
+        list = await query(_QUERY_SQL);
+    } catch (err) {
+        console.error(err)
+    }
+    if (list) {
+        ctx.body = {
+            code: 200,
+            data: list
+        }
+    }else{
+        ctx.body = {
+            code:400
+        }
+    }
+})
 module.exports = router

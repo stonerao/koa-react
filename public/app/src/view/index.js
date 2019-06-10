@@ -23,7 +23,7 @@ class App extends Component {
             <div className="full">
                 <Menus props={this}></Menus>
                 <div className="main">
-                    <Historys></Historys>
+                    {/* <Historys></Historys> */}
                     <div className="main-box">
                         {this.props.children}
                     </div>

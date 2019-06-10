@@ -42,8 +42,7 @@ router.post("/delete", async (ctx, next) => {
         }
         return
     }
-    let data = await query(`delete from management where id in (${id})`)
-    console.log(data)
+    let data = await query(`delete from management where id in (${id})`) 
     if (data.affectedRows !== 0) {
         ctx.body = {
             code: 200,

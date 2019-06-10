@@ -22,6 +22,10 @@ class App extends Component {
                         {
                             name: "人员管理",
                             url: "/home/people"
+                        },
+                        {
+                            name: "货物管理",
+                            url: "/home/goods"
                         }
                     ]
                 }, {

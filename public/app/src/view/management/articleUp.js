@@ -28,10 +28,15 @@ class articleUp extends Component {
             editorState: ContentUtils.clear(this.state.editorState)
         })
     }
-    submit = () => {
+    submit = () => { 
+        if(!this.state.editorState){
+            return false
+        }
+        const html = this.state.editorState.toHTML()
+         
         axios.post('/api/management/push', {
             title: this.state.title,
-            html: this.state.editorState.toHTML()
+            html: html
         }).then(res => {
             if (res.code === 200) {
                 message.success(res.msg);

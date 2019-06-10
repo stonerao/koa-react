@@ -67,7 +67,16 @@ router.get("/getList", async (ctx) => {
      * 
     */
     const { current, size, username, age, phone, duties } = ctx.query;
-    const COUNT_SQL = `SELECT COUNT(Id) FROM ${SQL_TABLE_NAME} ${username == "" ? '' : `WHERE username LIKE '%${username}%'`}`
+    const _D = {
+        username, age, phone, duties
+    }
+    let arr = []
+    for (let key in _D) {
+        arr.push(`${key} LIKE '%${_D[key]}'`)
+    }
+    const _STR = arr.join(" and ")
+    const COUNT_SQL = `SELECT COUNT(Id) FROM ${SQL_TABLE_NAME} WHERE ${_STR}`
+    console.log(COUNT_SQL)
     // get the total
     let counts = await query(COUNT_SQL)
     //total
@@ -94,6 +103,53 @@ router.get("/getList", async (ctx) => {
         list: list,
         total: count,
         sql: QUERY_LIST
+    }
+})
+router.post("/delete", async (ctx) => {
+    let { id } = ctx.request.body;
+    if (!id) {
+        ctx.body = {
+            msg: "error", coed: 400
+        }
+        return
+    }
+    let data = await query(`delete from ${SQL_TABLE_NAME} where id in (${id})`)
+    if (data.affectedRows !== 0) {
+        ctx.body = {
+            code: 200,
+            msg: "删除成功！"
+        }
+    } else {
+        ctx.body = {
+            code: 400,
+            msg: "error"
+        }
+    }
+})
+router.post("/edit", async (ctx) => {
+    let { username, age, phone, duties, id } = ctx.request.body;
+    if (!id) {
+        ctx.body = {
+            msg: "error", coed: 400
+        }
+        return
+    }
+    const _UPDATE_SQL = SQL._update({
+        Id: id
+    }, {
+            username, age, phone, duties, date: GetCurrentDate()
+        }, SQL_TABLE_NAME)
+    const data = await query(_UPDATE_SQL)
+    if (data.affectedRows !== 0) {
+        ctx.body = {
+            code: 200,
+            msg: "修改成功！"
+        }
+    } else {
+        ctx.body = {
+            code: 400,
+            msg: "error"
+        }
     }
 })
 module.exports = router

@@ -10,6 +10,7 @@ const People = _async(() => import('./view/management/people'));
 const Duties = _async(() => import('./view/management/duties'));
 const article = _async(() => import('./view/management/article'));
 const articleUp = _async(() => import('./view/management/articleUp'));
+const goods = _async(() => import('./view/management/goods'));
 
 const BasicRoute = () => (
     <BrowserRouter>
@@ -26,6 +27,7 @@ const BasicRoute = () => (
                             <Route path="/home/duties" component={Duties}></Route>
                             <Route path="/home/articleUp" component={articleUp}></Route>
                             <Route path="/home/article" component={article}></Route>
+                            <Route path="/home/goods" component={goods}></Route>
                         </Index>
                     }>
                     </Route>
