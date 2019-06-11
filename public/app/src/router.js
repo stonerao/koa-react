@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect, HashRouter } from 'react-router-dom';
 import _async from './utils/async'
 const Home = _async(() => import('./view/home.js'));
 const Index = _async(() => import('./view/index.js'));
@@ -11,9 +11,10 @@ const Duties = _async(() => import('./view/management/duties'));
 const article = _async(() => import('./view/management/article'));
 const articleUp = _async(() => import('./view/management/articleUp'));
 const goods = _async(() => import('./view/management/goods'));
+const options = _async(() => import('./view/management/options'));
 
 const BasicRoute = () => (
-    <BrowserRouter>
+    <HashRouter>
         <Switch>
             <Route path="/" render={() =>
                 <Home>
@@ -28,6 +29,7 @@ const BasicRoute = () => (
                             <Route path="/home/articleUp" component={articleUp}></Route>
                             <Route path="/home/article" component={article}></Route>
                             <Route path="/home/goods" component={goods}></Route>
+                            <Route path="/home/options" component={options}></Route>
                         </Index>
                     }>
                     </Route>
@@ -42,7 +44,7 @@ const BasicRoute = () => (
                 </Home>
             }></Route> */}
         </Switch>
-    </BrowserRouter>
+    </HashRouter>
 );
 
 export default BasicRoute;

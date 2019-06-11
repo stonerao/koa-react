@@ -26,6 +26,10 @@ class App extends Component {
                         {
                             name: "货物管理",
                             url: "/home/goods"
+                        },
+                        {
+                            name: "种类管理",
+                            url: "/home/options"
                         }
                     ]
                 }, {

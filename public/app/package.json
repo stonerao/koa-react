@@ -135,5 +135,6 @@
   "devDependencies": {
     "babel-plugin-import": "^1.11.0"
   },
-  "proxy": "http://localhost:3000"
+  "proxy": "http://localhost:3000",
+  "homepage":"."
 }
