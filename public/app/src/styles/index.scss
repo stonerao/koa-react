@@ -226,6 +226,12 @@
  .m-l {
      margin-left: 20px;
  }
+ .m-t {
+     margin-top: 20px;
+ }
+ .m-b {
+     margin-bottom: 20px;
+ }
 
  .m-people-inp {
      margin-bottom: 20px;
@@ -241,8 +247,7 @@
  }
 
  .modal-table-flex {
-     display: flex;
-
+     display: flex; 
  }
 
  .flex-1 {
@@ -269,7 +274,7 @@
      bottom: 10px;
  }
 
- $o-width:260px;
+ $o-width:160px;
 
  .m-options-left {
      width: $o-width;
@@ -277,6 +282,7 @@
      left: 0;
      top: 0;
      bottom: 0;
+     border-right: 1px solid #e0e0e0;
  }
 
  .m-options-right {
@@ -285,4 +291,35 @@
      top: 0;
      right: 0;
      bottom: 0;
+ }
+
+ .options-list {
+     li {
+         padding-left: 10px;
+         line-height: 40px;
+         cursor: pointer;
+
+         &:hover {
+             color: red;
+         }
+         
+     }
+     li.active{
+        color: red;
+    }
+ }
+
+ .options-types {
+     display: flex;
+     width:800px;
+     padding:10px 20px;
+ }
+ .fenekai{
+     justify-content: space-between;
+ }
+ .options-type--li{
+     line-height:32px;
+     &:hover{
+         color:red;
+     }
  }
