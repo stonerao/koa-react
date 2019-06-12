@@ -226,9 +226,11 @@
  .m-l {
      margin-left: 20px;
  }
+
  .m-t {
      margin-top: 20px;
  }
+
  .m-b {
      margin-bottom: 20px;
  }
@@ -247,7 +249,7 @@
  }
 
  .modal-table-flex {
-     display: flex; 
+     display: flex;
  }
 
  .flex-1 {
@@ -264,6 +266,9 @@
 
  .inp-line {
      line-height: 32px;
+     display: inline-block;
+     width: 60px;
+     text-align: right
  }
 
  .m-options {
@@ -302,24 +307,28 @@
          &:hover {
              color: red;
          }
-         
+
      }
-     li.active{
-        color: red;
-    }
+
+     li.active {
+         color: red;
+     }
  }
 
  .options-types {
      display: flex;
-     width:800px;
-     padding:10px 20px;
+     width: 800px;
+     padding: 10px 20px;
  }
- .fenekai{
+
+ .fenekai {
      justify-content: space-between;
  }
- .options-type--li{
-     line-height:32px;
-     &:hover{
-         color:red;
+
+ .options-type--li {
+     line-height: 32px;
+
+     &:hover {
+         color: red;
      }
  }

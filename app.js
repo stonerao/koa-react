@@ -1,5 +1,6 @@
 const Koa = require('koa')
 const app = new Koa()
+const compress =require('koa-compress');
 const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
@@ -13,6 +14,8 @@ const api_member = require('./routes/api/member')
 const management = require('./routes/api/management') 
 const personnel = require('./routes/api/personnel') 
 const goods = require('./routes/api/goods') 
+const options = {threshold:2048};
+app.use(compress(options));
 
 const ws = require("./routes/socket/index")
 // error handler

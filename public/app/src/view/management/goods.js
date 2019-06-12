@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Input, Icon, Table, Button, Modal, Select, message } from 'antd';
 import axios from '../../utils/axios';
 const { Option } = Select;
+let $ = (name) => {
+    return document.querySelector(name);
+}
 class goods extends Component {
     constructor() {
         super()
@@ -24,11 +27,25 @@ class goods extends Component {
                     size: "S,L,XL",
                     material: "棉布",
                     kind: "男装",
-                    brand: "山寨"
+                    brand: "山寨",
+                    key: "12"
                 }
-            ]
+            ],
+            addOptions: {
+                name: "",
+                number: "",
+                type: "",
+                size: "",
+                material: "",
+                brand: "",
+                kind: ""
+            }
         }
         this.getTypeList()
+    }
+    getOptionsAll(){
+        // get all options
+        
     }
     getTypeList() {
         axios("/api/goods/typeGet").then(res => {
@@ -46,17 +63,55 @@ class goods extends Component {
     addTypeCancel = () => {
         this.setState({
             typeVisible: false,
-            typeInptAdd: ""
+            typeInptAdd: "", 
+        })
+    }
+    optionTypeChange = (value) => {
+        this.state.addOptions.type = value;
+        this.setState({
+            addOptions: this.state.addOptions
+        })
+    }
+    optionSizeChange = (value) => {
+        this.state.addOptions.size = value;
+        this.setState({
+            addOptions: this.state.addOptions
+        })
+    }
+    optionMeChange = (value) => {
+        this.state.addOptions.material = value;
+        this.setState({
+            addOptions: this.state.addOptions
+        })
+    }
+    optionBrandChange = (value) => {
+        this.state.addOptions.brand = value;
+        this.setState({
+            addOptions: this.state.addOptions
+        })
+    }
+    optionKindChange = (value) => {
+        this.state.addOptions.kind = value;
+        this.setState({
+            addOptions: this.state.addOptions
         })
     }
     addTypeOk = () => {
-        axios.post("/api/goods/typeAdd", {
-            name: this.state.typeInptAdd
-        }).then(res => {
-            if (res.code == 200) {
-
-            }
-        })
+        let name = $("#add-name")
+        let number = $("#add-number")  
+         
+        this.state.addOptions.name = name.value
+        this.state.addOptions.number = number.value
+        
+        
+        
+        /*  axios.post("/api/goods/typeAdd", {
+             name: this.state.typeInptAdd
+         }).then(res => {
+             if (res.code == 200) {
+ 
+             }
+         }) */
         /* this.setState({
             typeVisible: false
         }) */
@@ -140,6 +195,13 @@ class goods extends Component {
             width: 130,
         },
     ]
+    showDeleteConfirm = (text, row) => {
+
+    }
+    showEditConfirm = (text, row) => {
+
+    }
+
     render() {
         return (
             <div className="c-box">
@@ -162,9 +224,75 @@ class goods extends Component {
                     onOk={this.addTypeOk}
                     onCancel={this.addTypeCancel}
                 >
-                    <div className="modal-table-flex">
-                        <span className="inp-line">类型：</span>
-                        <Input value={this.state.typeInptAdd} className="flex-1" onChange={this.typeInpChange} />
+                    <div className="modal-table-flex ">
+                        <span className="inp-line">商品名：</span>
+                        <Input id="add-name" className="flex-1" />
+                    </div>
+                    <div className="modal-table-flex m-t">
+                        <span className="inp-line">数量：</span>
+                        <Input id="add-number"  className="flex-1"  />
+                    </div>
+                    <div className="modal-table-flex m-t">
+                        <span className="inp-line ">类型：</span>
+                        <Select
+                            className="flex-1"
+                            showSearch
+                            placeholder="Select a person"
+                            optionFilterProp="children"
+                            id="add-type"
+                            // value={this.state.addOptions.type}
+                            onChange={this.optionTypeChange}
+                        >
+                            <Option value="jack">Jack</Option>
+                        </Select>
+                    </div>
+
+                    <div className="modal-table-flex m-t">
+                        <span className="inp-line">尺码：</span>
+                        <Select
+                            mode="multiple"
+                            className="flex-1"
+                            placeholder="Please select"
+                            id="add-size"
+                            onChange={this.optionSizeChange} >
+                            <Option value="jack">Jack</Option>
+                        </Select>,
+                    </div>
+                    <div className="modal-table-flex m-t">
+                        <span className="inp-line">材质：</span>
+                        <Select
+                            className="flex-1"
+                            showSearch
+                            placeholder="Select a person"
+                            optionFilterProp="children"
+                            onChange={this.optionMeChange}
+                        >
+                            <Option value="jack">Jack</Option>
+                        </Select>
+                    </div>
+                    <div className="modal-table-flex m-t">
+                        <span className="inp-line">品牌：</span>
+                        <Select
+                            className="flex-1"
+                            showSearch
+                            placeholder="Select a person"
+                            optionFilterProp="children"
+                            onChange={this.optionBrandChange}
+                        >
+                            <Option value="jack">Jack</Option>
+                        </Select>
+                    </div>
+                    <div className="modal-table-flex m-t">
+                        <span className="inp-line">种类：</span>
+                        <Select
+                            className="flex-1"
+                            showSearch
+                            placeholder="Select a person"
+                            optionFilterProp="children"
+                            onChange={this.optionKindChange}
+                        >
+                            <Option value="jack">Jack</Option>
+                        </Select>
                     </div>
                 </Modal>
             </div>

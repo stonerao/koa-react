@@ -5,9 +5,7 @@ const confirm = Modal.confirm;
 
 // rowSelection object indicates the need for row selection
 
-let $ = (name) => {
-    return document.querySelector(name);
-}
+
 class duties extends Component {
     constructor() {
         super()
