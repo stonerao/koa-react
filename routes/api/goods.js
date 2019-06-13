@@ -156,7 +156,7 @@ router.get("/optionsTypeGet", async (ctx) => {
         if (res) {
             ctx.body = res
         } else {
-            ctx.body = ErrorEvent
+            ctx.body = codeError
         }
     })
 })
@@ -268,6 +268,53 @@ router.get("/goodsGet", async (ctx) => {
         list: _data,
         total: total,
         code: 200
+    }
+
+})
+router.post("/goodsDelete", async (ctx) => {
+    const { id } = ctx.request.body;
+    if (!id) {
+        ctx.body = codeError;
+    }
+    let data = await query(SQL.deleteId(GOODS_TABLE_NAME, id))
+    if (data.affectedRows !== 0) {
+        ctx.body = { code: 200 }
+    } else {
+        ctx.body = codeError;
+    }
+})
+const has = (obj, pro) => {
+    return pro.map(elem => obj.hasOwnProperty(elem)).indexOf(false) !== -1
+}
+router.post("/goodsEdit", async (ctx) => {
+    const body = ctx.request.body;
+    // if has property
+    let isHas = has(body, ['name', 'number', 'type', 'size', 'material', 'brand', 'kind', 'id'])
+    if (isHas) {
+        //not has
+        ctx.body = codeError;
+    } else {
+        const EDIT_SQL = SQL._update(
+            { Id: body.id },
+            {
+                name: body.name,
+                number: body.number,
+                type: body.type,
+                size: body.size,
+                material: body.material,
+                brand: body.brand,
+                kind: body.kind
+            },
+            GOODS_TABLE_NAME
+        )
+        let data = await query(EDIT_SQL);
+        if (data.affectedRows === 1) {
+            ctx.body = {
+                code: 200
+            }
+        } else {
+            ctx.body = codeError
+        }
     }
 
 })

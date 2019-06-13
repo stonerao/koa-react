@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Input, Icon, Table, Button, Modal, Select, message } from 'antd';
 import axios from '../../utils/axios';
 const { Option } = Select;
+const confirm = Modal.confirm;
 let $ = (name) => {
     return document.querySelector(name);
 }
@@ -13,13 +14,11 @@ class goods extends Component {
             typeInptAdd: "",
             pagination: {
                 current: 1,
-                pageSize: 1,
+                pageSize: 10,
                 total: 10,
                 size: "small"
             },
-            data: [
-
-            ],
+            data: [],
             addOptions: {
                 name: "",
                 number: "",
@@ -42,7 +41,9 @@ class goods extends Component {
             size: [],
             marterilal: [],
             brand: [],
-            kind: []
+            kind: [],
+            isEdit: false,
+            editId: null
         }
         this.getTypeList()
         this.getOptionsAll()
@@ -65,6 +66,7 @@ class goods extends Component {
             }
         })
     }
+
     getOptionsAll() {
         // get all options
         // type
@@ -110,10 +112,11 @@ class goods extends Component {
         // kind
         this.axiosOptions(5).then(res => {
             if (res.code !== 400) {
+                let data = res.map(elem => {
+                    return <Option key={elem.Id} value={elem.Id}>{elem.name}</Option>
+                })
                 this.setState({
-                    kind: res.map(elem => {
-                        return <Option key={elem.Id} value={elem.Id}>{elem.name}</Option>
-                    })
+                    kind: data
                 })
             }
         })
@@ -140,7 +143,7 @@ class goods extends Component {
                 }))
                 this.setState({
                     data: data,
-                    pagination:this.state.pagination
+                    pagination: this.state.pagination
                 })
             }
         })
@@ -217,36 +220,68 @@ class goods extends Component {
         })
     }
     addTypeOk = () => {
+
         let name = $("#add-name")
         let number = $("#add-number")
-
         this.state.addOptions.name = name.value
         this.state.addOptions.number = number.value
-        axios.post("/api/goods/goodsAdd", this.state.addOptions).then(res => {
-            if (res.code == 200) {
-                message.success("添加成功！");
+        if (this.state.isEdit) {
+            axios.post("/api/goods/goodsEdit", {
+                ...this.state.addOptions,
+                id: this.state.editId
+            }).then(res => {
+                if (res.code === 200) {
+                    message.success("修改成功！");
+                    this.state.addOptions = {
+                        name: "",
+                        number: "",
+                        type: "",
+                        size: undefined,
+                        material: "",
+                        brand: "",
+                        kind: ""
+                    }
+                    this.setState({
+                        addOptions: this.state.addOptions,
+                        isEdit: false,
+                        typeVisible: false,
+                        editId: null
+                    })
+                    this.search()
 
-                this.state.addOptions = {
-                    name: "",
-                    number: "",
-                    type: "",
-                    size: undefined,
-                    material: "",
-                    brand: "",
-                    kind: ""
+                } else {
+                    message.success("修改失败！")
                 }
+            })
+        } else {
+            axios.post("/api/goods/goodsAdd", this.state.addOptions).then(res => {
+                if (res.code === 200) {
+                    message.success("添加成功！");
+                    this.state.addOptions = {
+                        name: "",
+                        number: "",
+                        type: "",
+                        size: undefined,
+                        material: "",
+                        brand: "",
+                        kind: ""
+                    }
+                    this.setState({
+                        addOptions: this.state.addOptions,
+                        isEdit: false,
+                        typeVisible: false,
+                        editId: null
+                    })
+                    this.search()
 
-                this.setState({
-                    addOptions: this.state.addOptions
-                })
-                console.log(this.state.addOptions)
-            } else {
-                message.success("添加失败！")
-            }
-        })
+                } else {
+                    message.success("添加失败！")
+                }
+            })
+        }
         /* this.setState({
-            typeVisible: false
-        }) */
+        typeVisible: false
+    }) */
     }
     addType = () => {
         this.setState({
@@ -269,9 +304,9 @@ class goods extends Component {
             name: $("#search-name").value
         }
         let _options = {};
-        for(let key in options){
-            if(options[key]!==""){
-                _options = options[key]
+        for (let key in options) {
+            if (options[key]) {
+                _options[key] = options[key];
             }
         }
         this.getTypeList(_options)
@@ -351,11 +386,64 @@ class goods extends Component {
             width: 130,
         },
     ]
-    showDeleteConfirm = (text, row) => {
+    delete = (id) => {
+        axios.post("/api/goods/goodsDelete", {
+            id: id
+        }).then(res => {
+            if (res.code === 200) {
+                message.success("删除成功！")
+                this.search()
 
+            } else {
+                message.success("删除失败!")
+            }
+        })
+    }
+    deleteall = (id) => {
+        confirm({
+            title: 'Are you sure delete this task?',
+            content: 'Some descriptions',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk: () => {
+                this.delete(this.state.tableSelect)
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    }
+    showDeleteConfirm = (text, row) => {
+        confirm({
+            title: 'Are you sure delete this task?',
+            content: 'Some descriptions',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk: () => {
+                this.delete(row.Id)
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     }
     showEditConfirm = (text, row) => {
-
+        
+        
+        this.setState({
+            addOptions: row
+        })
+        this.setState({
+            isEdit: true,
+            typeVisible: true,
+            editId: row.Id
+        })
+        setTimeout(()=>{
+            $("#add-name").value = row.name
+            $("#add-number").value = row.number
+        })
     }
 
     render() {
@@ -432,12 +520,13 @@ class goods extends Component {
 
                     <div>
                         <Icon type="plus-circle" onClick={this.addType} className="cur" style={{ fontSize: "18px", lineHeight: "36px", marginRight: "30px" }} />
-                        <Icon onClick={this.search} type="search" className="cur" style={{ fontSize: "18px", lineHeight: "36px" }} />
+                        <Icon onClick={this.search} type="search" className="cur" style={{ fontSize: "18px", lineHeight: "36px", marginRight: "30px" }} />
+                        <Icon onClick={this.deleteall} type="delete" className="cur" style={{ fontSize: "18px", lineHeight: "36px" }} />
                     </div>
                 </div>
                 <Table onChange={this.pageChange} pagination={this.state.pagination} rowSelection={this.rowSelection} columns={this.columns} dataSource={this.state.data} />
                 <Modal
-                    title="添加类型"
+                    title={this.state.isEdit ? '修改' : '添加'}
                     visible={this.state.typeVisible}
                     onOk={this.addTypeOk}
                     onCancel={this.addTypeCancel}
