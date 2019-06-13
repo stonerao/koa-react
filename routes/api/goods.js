@@ -4,6 +4,9 @@ const SQL = require("../../sql/sql")
 const SQL_TABLE_NAME = "goods"
 const { GetCurrentDate, getDay } = require("../../utils/base")
 router.prefix('/api/goods')
+const codeError = {
+    code: 400
+}
 /* personnel management */
 router.post("/typeAdd", async (ctx, next) => {
     const { name } = ctx.request.body;
@@ -65,6 +68,11 @@ const TABLE_NAME_SIZE = "option_size";
 const TABLE_NAME_MATERIAL = "option_materilal";
 const TABLE_NAME_BRAND = "option_brand";
 const TABLE_NAME_KIND = "option_kind";
+let cache_type = null
+let cache_size = null
+let cache_material = null
+let cache_brand = null
+let cache_kind = null
 const retunTypeName = (type) => {
     let TABLE_NAME;
     switch (+type) {
@@ -86,7 +94,7 @@ const retunTypeName = (type) => {
     }
     return TABLE_NAME
 }
- 
+
 router.post("/optionsTypeAdd", async (ctx) => {
     const { name, type } = ctx.request.body;
     const TABLE_NAMES = retunTypeName(type)
@@ -107,15 +115,50 @@ router.post("/optionsTypeAdd", async (ctx) => {
         }
     }
 })
-router.get("/optionsTypeGet", async (ctx) => {
-    let { type } = ctx.query;
+const getOptions = async (_type, ctx) => {
+    let type;
+    if (_type) {
+        type = _type
+    } else {
+        type = ctx.query.type
+    }
+    if (!type) {
+        return false
+    }
+
     const TABLE_NAMES = retunTypeName(type)
-    const GET_SQL = `SELECT * FROM ${TABLE_NAMES} order by id desc;` 
+    const GET_SQL = `SELECT * FROM ${TABLE_NAMES} order by id desc;`
     let data = await query(GET_SQL)
-    ctx.body = {
+    switch (type) {
+        case 1:
+            cache_type = data;
+            break;
+        case 2:
+            cache_size = data;
+            break;
+        case 3:
+            cache_material = data;
+            break;
+        case 4:
+            cache_brand = data;
+            break;
+        case 5:
+            cache_kind = data;
+            break;
+    }
+    return {
         list: data,
         code: 200
     }
+}
+router.get("/optionsTypeGet", async (ctx) => {
+    await getOptions(false, ctx).then(res => {
+        if (res) {
+            ctx.body = res
+        } else {
+            ctx.body = ErrorEvent
+        }
+    })
 })
 router.post("/optionsTypeDelete", async (ctx) => {
     const { id, type } = ctx.request.body;
@@ -133,47 +176,99 @@ router.post("/optionsTypeDelete", async (ctx) => {
         }
     }
 })
+const GOODS_TABLE_NAME = "goods"
+router.post("/goodsAdd", async (ctx) => {
+    const { name, number, type, size, material, brand, kind } = ctx.request.body;
+    let _number = parseInt(number)
 
-router.post("/optionsSizeAdd", async (ctx) => {
-    const { name } = ctx.request.body;
-    if (!name) {
-        return ctx.body = { code: 400 }
+    if (isNaN(_number) || !Array.isArray(size)) {
+        ctx.body = codeError
+        return
     }
-    const ADD_SQL = SQL._insert({ date: GetCurrentDate(), name: name }, TABLE_NAME_SIZE)
+    if (!name || !number || !type || !size || !material || !brand || !kind) {
+        ctx.body = codeError
+        return;
+    }
+    const options = {
+        name, number: _number, type, size, material, brand, kind, date: GetCurrentDate()
+    }
+    const ADD_SQL = SQL._insert(options, GOODS_TABLE_NAME)
+
     const data = await query(ADD_SQL)
     if (data.affectedRows != 0) {
         ctx.body = {
-            code: 200,
-            msg: "add success"
-        }
-    } else {
-        ctx.body = {
-            code: 400,
-            msg: "add error"
-        }
-    }
-})
-router.get("/optionsSizeGet", async (ctx) => {
-    const GET_SQL = `SELECT * FROM ${TABLE_NAME_SIZE} order by id desc;`
-    let data = await query(GET_SQL)
-    ctx.body = {
-        list: data,
-        code: 200
-    }
-})
-router.post("/optionsSizeDelete", async (ctx) => {
-    const { id } = ctx.request.body;
-    const SELECT_SQL = SQL.deleteId(TABLE_NAME_SIZE, id)
-    const data = await query(SELECT_SQL);
-    if (data.affectedRows != 0) {
-        ctx.body = {
-            code: 200,
-            msg: "删除成功！"
+            code: 200
         }
     } else {
         ctx.body = {
             code: 400
         }
     }
+
+
+})
+
+router.get("/goodsGet", async (ctx) => {
+    const { name, number, type, size, material, brand, kind, current = 1, pageSize = 20 } = ctx.query;
+    const count = await query(SQL._count(GOODS_TABLE_NAME));
+    const total = Object.values(count[0])[0]
+    let options = {
+        name: name || "",
+        number: number || "",
+        type: type || "",
+        size: size || "",
+        material: material || "",
+        brand: brand || "",
+        kind: kind || "",
+    }
+    let search = {};
+    for (let key in options) {
+        if (options[key]) {
+            search[key] = options[key]
+        }
+    }
+    const QUERY_LIST = SQL._multi_query(
+        options,
+        GOODS_TABLE_NAME,
+        (current - 1) * pageSize,
+        pageSize)
+    let data = await query(QUERY_LIST)
+    // 查询各种类别   
+    if (!cache_type) {
+        await getOptions(1)
+    }
+    if (!cache_size) {
+        await getOptions(2)
+    }
+    if (!cache_material) {
+        await getOptions(3)
+    }
+    if (!cache_brand) {
+        await getOptions(4)
+    }
+    if (!cache_kind) {
+        await getOptions(5)
+    }
+
+    let _data = data.map(elem => {
+        let _size = elem.size.split(",")
+        let _size_da = _size.map(y => {
+            return cache_size.filter(x => y == x.Id)[0].name
+        })
+        return {
+            ...elem,
+            type: cache_type.filter(x => elem.type == x.Id)[0].name || "",
+            size: _size_da.join(","),
+            material: cache_material.filter(x => elem.material == x.Id)[0].name || "",
+            brand: cache_brand.filter(x => elem.brand == x.Id)[0].name || "",
+            kind: cache_kind.filter(x => elem.kind == x.Id)[0].name || "",
+        }
+    })
+    ctx.body = {
+        list: _data,
+        total: total,
+        code: 200
+    }
+
 })
 module.exports = router

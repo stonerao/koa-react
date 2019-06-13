@@ -11,59 +11,147 @@ class goods extends Component {
         this.state = {
             typeVisible: false,
             typeInptAdd: "",
-            types: [],
             pagination: {
                 current: 1,
-                pageSize: 10,
+                pageSize: 1,
                 total: 10,
                 size: "small"
             },
             data: [
-                {
-                    name: "2019爆款T恤",
-                    date: "2019-6-10 17:23:27",
-                    number: 13,
-                    type: "上衣",
-                    size: "S,L,XL",
-                    material: "棉布",
-                    kind: "男装",
-                    brand: "山寨",
-                    key: "12"
-                }
+
             ],
             addOptions: {
                 name: "",
                 number: "",
                 type: "",
-                size: "",
+                size: undefined,
                 material: "",
                 brand: "",
                 kind: ""
-            }
+            },
+            searchOptions: {
+                name: "",
+                number: "",
+                type: "",
+                size: undefined,
+                material: "",
+                brand: "",
+                kind: ""
+            },
+            type: [],
+            size: [],
+            marterilal: [],
+            brand: [],
+            kind: []
         }
         this.getTypeList()
+        this.getOptionsAll()
     }
-    getOptionsAll(){
-        // get all options
-        
-    }
-    getTypeList() {
-        axios("/api/goods/typeGet").then(res => {
-            if (!res) {
-                return
+    async axiosOptions(type) {
+        return await axios("/api/goods/optionsTypeGet", {
+            params: {
+                type: type
             }
-            let arr = res.list.map(elem => {
-                return <Option key={elem.Id}>{elem.type}</Option>
-            })
-            this.setState({
-                types: arr
-            })
+        }).then(res => {
+            const codeError = { code: 400 }
+            if (res) {
+                if (res.code === 200) {
+                    return res.list;
+                } else {
+                    return codeError
+                }
+            } else {
+                return codeError
+            }
         })
+    }
+    getOptionsAll() {
+        // get all options
+        // type
+        this.axiosOptions(1).then(res => {
+            if (res.code !== 400) {
+                this.setState({
+                    type: res.map(elem => {
+                        return <Option key={elem.Id} value={elem.Id}>{elem.name}</Option>
+                    })
+                })
+            }
+        })
+        // size
+        this.axiosOptions(2).then(res => {
+            if (res.code !== 400) {
+                this.setState({
+                    size: res.map(elem => {
+                        return <Option key={elem.Id} value={elem.Id}>{elem.name}</Option>
+                    })
+                })
+            }
+        })
+        // marterilal
+        this.axiosOptions(3).then(res => {
+            if (res.code !== 400) {
+                this.setState({
+                    marterilal: res.map(elem => {
+                        return <Option key={elem.Id} value={elem.Id}>{elem.name}</Option>
+                    })
+                })
+            }
+        })
+        // barnd
+        this.axiosOptions(4).then(res => {
+            if (res.code !== 400) {
+                this.setState({
+                    brand: res.map(elem => {
+                        return <Option key={elem.Id} value={elem.Id}>{elem.name}</Option>
+                    })
+                })
+            }
+        })
+        // kind
+        this.axiosOptions(5).then(res => {
+            if (res.code !== 400) {
+                this.setState({
+                    kind: res.map(elem => {
+                        return <Option key={elem.Id} value={elem.Id}>{elem.name}</Option>
+                    })
+                })
+            }
+        })
+    }
+    getTypeList = (options) => {
+        let params = {
+            current: this.state.pagination.current,
+            pageSize: this.state.pagination.pageSize
+        }
+        if (typeof options === 'object') {
+            params = {
+                ...params,
+                ...options
+            }
+        }
+        axios("/api/goods/goodsGet", {
+            params: params
+        }).then(res => {
+            if (res.code === 200) {
+                this.state.pagination.total = res.total;
+                let data = res.list.map(elem => ({
+                    ...elem,
+                    key: elem.Id
+                }))
+                this.setState({
+                    data: data,
+                    pagination:this.state.pagination
+                })
+            }
+        })
+    }
+    getAllType() {
+
     }
     addTypeCancel = () => {
         this.setState({
             typeVisible: false,
-            typeInptAdd: "", 
+            typeInptAdd: "",
         })
     }
     optionTypeChange = (value) => {
@@ -96,22 +184,66 @@ class goods extends Component {
             addOptions: this.state.addOptions
         })
     }
+
+
+    searchTypeChange = (value) => {
+        this.state.searchOptions.type = value;
+        this.setState({
+            searchOptions: this.state.searchOptions
+        })
+    }
+    searchSizeChange = (value) => {
+        this.state.searchOptions.size = value;
+        this.setState({
+            searchOptions: this.state.searchOptions
+        })
+    }
+    searchMeChange = (value) => {
+        this.state.searchOptions.material = value;
+        this.setState({
+            searchOptions: this.state.searchOptions
+        })
+    }
+    searchBrandChange = (value) => {
+        this.state.searchOptions.brand = value;
+        this.setState({
+            searchOptions: this.state.searchOptions
+        })
+    }
+    searchKindChange = (value) => {
+        this.state.searchOptions.kind = value;
+        this.setState({
+            searchOptions: this.state.searchOptions
+        })
+    }
     addTypeOk = () => {
         let name = $("#add-name")
-        let number = $("#add-number")  
-         
+        let number = $("#add-number")
+
         this.state.addOptions.name = name.value
         this.state.addOptions.number = number.value
-        
-        
-        
-        /*  axios.post("/api/goods/typeAdd", {
-             name: this.state.typeInptAdd
-         }).then(res => {
-             if (res.code == 200) {
- 
-             }
-         }) */
+        axios.post("/api/goods/goodsAdd", this.state.addOptions).then(res => {
+            if (res.code == 200) {
+                message.success("添加成功！");
+
+                this.state.addOptions = {
+                    name: "",
+                    number: "",
+                    type: "",
+                    size: undefined,
+                    material: "",
+                    brand: "",
+                    kind: ""
+                }
+
+                this.setState({
+                    addOptions: this.state.addOptions
+                })
+                console.log(this.state.addOptions)
+            } else {
+                message.success("添加失败！")
+            }
+        })
         /* this.setState({
             typeVisible: false
         }) */
@@ -126,11 +258,35 @@ class goods extends Component {
             typeInptAdd: event.target.value,
         })
     }
-    search() {
+    search = () => {
+        let o = this.state.searchOptions
+        const options = {
+            type: o.type,
+            brand: o.brand,
+            material: o.material,
+            kind: o.kind,
+            size: o.size,
+            name: $("#search-name").value
+        }
+        let _options = {};
+        for(let key in options){
+            if(options[key]!==""){
+                _options = options[key]
+            }
+        }
+        this.getTypeList(_options)
 
     }
     typeChange = (data) => {
 
+    }
+    pageChange = (e) => {
+        this.setState({
+            pagination: e
+        })
+        setTimeout(() => {
+            this.search()
+        })
     }
     getGoods() {
 
@@ -205,13 +361,75 @@ class goods extends Component {
     render() {
         return (
             <div className="c-box">
-                <div className="m-people">
+                <div className="m-goods">
+                    <div>
+                        <span >商品名：</span>
+                        <Input id="search-name" className="flex-1" />
+                    </div>
                     <div>
                         <span >类型：</span>
-                        <Select mode="tags" style={{ width: '100%' }} onChange={this.typeChange} tokenSeparators={[',']}>
-                            {this.state.types}
+                        <Select
+                            className="flex-1"
+                            showSearch
+                            placeholder="Select a person"
+                            optionFilterProp="children"
+                            value={this.state.searchOptions.type}
+                            onChange={this.searchTypeChange}
+                        >
+                            {this.state.type}
                         </Select>
                     </div>
+                    <div>
+                        <span >尺码：</span>
+                        <Select
+                            className="flex-1"
+                            placeholder="Please select"
+                            id="add-size"
+                            value={this.state.searchOptions.size}
+                            onChange={this.searchSizeChange} >
+                            {this.state.size}
+                        </Select>
+                    </div>
+                    <div>
+                        <span>材质：</span>
+                        <Select
+                            className="flex-1"
+                            showSearch
+                            placeholder="Select a person"
+                            optionFilterProp="children"
+                            value={this.state.searchOptions.material}
+                            onChange={this.searchMeChange}
+                        >
+                            {this.state.marterilal}
+                        </Select>
+                    </div>
+                    <div>
+                        <span >品牌：</span>
+                        <Select
+                            className="flex-1"
+                            showSearch
+                            placeholder="Select a person"
+                            optionFilterProp="children"
+                            value={this.state.searchOptions.brand}
+                            onChange={this.searchBrandChange}
+                        >
+                            {this.state.brand}
+                        </Select>
+                    </div>
+                    <div>
+                        <span >种类：</span>
+                        <Select
+                            className="flex-1"
+                            showSearch
+                            placeholder="Select a person"
+                            optionFilterProp="children"
+                            value={this.state.searchOptions.kind}
+                            onChange={this.searchKindChange}
+                        >
+                            {this.state.kind}
+                        </Select>
+                    </div>
+
                     <div>
                         <Icon type="plus-circle" onClick={this.addType} className="cur" style={{ fontSize: "18px", lineHeight: "36px", marginRight: "30px" }} />
                         <Icon onClick={this.search} type="search" className="cur" style={{ fontSize: "18px", lineHeight: "36px" }} />
@@ -230,7 +448,7 @@ class goods extends Component {
                     </div>
                     <div className="modal-table-flex m-t">
                         <span className="inp-line">数量：</span>
-                        <Input id="add-number"  className="flex-1"  />
+                        <Input id="add-number" className="flex-1" />
                     </div>
                     <div className="modal-table-flex m-t">
                         <span className="inp-line ">类型：</span>
@@ -240,10 +458,10 @@ class goods extends Component {
                             placeholder="Select a person"
                             optionFilterProp="children"
                             id="add-type"
-                            // value={this.state.addOptions.type}
+                            value={this.state.addOptions.type}
                             onChange={this.optionTypeChange}
                         >
-                            <Option value="jack">Jack</Option>
+                            {this.state.type}
                         </Select>
                     </div>
 
@@ -254,9 +472,11 @@ class goods extends Component {
                             className="flex-1"
                             placeholder="Please select"
                             id="add-size"
+                            value={this.state.addOptions.size}
                             onChange={this.optionSizeChange} >
-                            <Option value="jack">Jack</Option>
-                        </Select>,
+
+                            {this.state.size}
+                        </Select>
                     </div>
                     <div className="modal-table-flex m-t">
                         <span className="inp-line">材质：</span>
@@ -265,9 +485,10 @@ class goods extends Component {
                             showSearch
                             placeholder="Select a person"
                             optionFilterProp="children"
+                            value={this.state.addOptions.material}
                             onChange={this.optionMeChange}
                         >
-                            <Option value="jack">Jack</Option>
+                            {this.state.marterilal}
                         </Select>
                     </div>
                     <div className="modal-table-flex m-t">
@@ -277,9 +498,10 @@ class goods extends Component {
                             showSearch
                             placeholder="Select a person"
                             optionFilterProp="children"
+                            value={this.state.addOptions.brand}
                             onChange={this.optionBrandChange}
                         >
-                            <Option value="jack">Jack</Option>
+                            {this.state.brand}
                         </Select>
                     </div>
                     <div className="modal-table-flex m-t">
@@ -289,9 +511,10 @@ class goods extends Component {
                             showSearch
                             placeholder="Select a person"
                             optionFilterProp="children"
+                            value={this.state.addOptions.kind}
                             onChange={this.optionKindChange}
                         >
-                            <Option value="jack">Jack</Option>
+                            {this.state.kind}
                         </Select>
                     </div>
                 </Modal>

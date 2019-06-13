@@ -111,7 +111,7 @@ class people extends Component {
     }
     async getDeps() {
         await axios("/api/member/getDeps").then(async (res) => {
-            if (res.code == 200) {
+            if (res.code === 200) {
                 await this.setState({
                     deps: res.data
                 })
@@ -132,7 +132,7 @@ class people extends Component {
         }).then(res => {
             if (res.code === 200) {
                 let data = res.list.map((elem) => {
-                    const duites = this.state.deps.filter(d => elem.duties == d.Id)[0]
+                    const duites = this.state.deps.filter(d => elem.duties === d.Id)[0]
 
                     const duitesName = duites ? duites.name : ""
                     return {
