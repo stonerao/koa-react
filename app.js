@@ -14,6 +14,7 @@ const api_member = require('./routes/api/member')
 const management = require('./routes/api/management') 
 const personnel = require('./routes/api/personnel') 
 const goods = require('./routes/api/goods') 
+const visualization = require('./routes/api/visualization') 
 const options = {threshold:2048};
 app.use(compress(options));
 
@@ -49,6 +50,7 @@ app.use(api_member.routes(), api_member.allowedMethods())
 app.use(management.routes(), management.allowedMethods())
 app.use(personnel.routes(), personnel.allowedMethods())
 app.use(goods.routes(), goods.allowedMethods())
+app.use(visualization.routes(), visualization.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

@@ -54,6 +54,10 @@ class App extends Component {
                         {
                             name: "可视化",
                             url: "/home/map3"
+                        },
+                        {
+                            name: "报表",
+                            url: "/home/pdf"
                         }
                     ]
                 }

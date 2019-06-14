@@ -12,6 +12,7 @@ const article = _async(() => import('./view/management/article'));
 const articleUp = _async(() => import('./view/management/articleUp'));
 const goods = _async(() => import('./view/management/goods'));
 const options = _async(() => import('./view/management/options'));
+const PDF = _async(() => import('./view/visualization/pdf'));
 
 const BasicRoute = () => (
     <HashRouter>
@@ -30,6 +31,7 @@ const BasicRoute = () => (
                             <Route path="/home/article" component={article}></Route>
                             <Route path="/home/goods" component={goods}></Route>
                             <Route path="/home/options" component={options}></Route>
+                            <Route path="/home/pdf" component={PDF}></Route>
                         </Index>
                     }>
                     </Route>
