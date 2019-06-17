@@ -1,33 +1,36 @@
-/*
- * action 类型
- */
+import { INCREASE, DECREASE, GETSUCCESS, REFRESHDATA,INCREASEDUTIES } from '../constants'  // 引入action类型名常量
 
-export const ADD_TODO = 'ADD_TODO';
-export const TOGGLE_TODO = 'TOGGLE_TODO'
-export const SET_VISIBILITY_FILTER = 'SET_VISIBILITY_FILTER'
-
-/*
- * 其它的常量
- */
-
-export const VisibilityFilters = {
-  SHOW_ALL: 'SHOW_ALL',
-  SHOW_COMPLETED: 'SHOW_COMPLETED',
-  SHOW_ACTIVE: 'SHOW_ACTIVE'
+// 这里的方法返回一个action对象
+export const increase = n => {
+  return {
+    type: INCREASE,
+    amount: n
+  }
+}
+export const increaseDuties = n => {
+  console.log(n)
+  return {
+    type: INCREASEDUTIES,
+    data: n
+  }
 }
 
-/*
- * action 创建函数
- */
-
-export function addTodo(text) {
-  return { type: ADD_TODO, text }
+export const decrease = n => {
+  return {
+    type: DECREASE,
+    amount: n
+  }
 }
 
-export function toggleTodo(index) {
-  return { type: TOGGLE_TODO, index }
+export const refreshData = () => {
+  return {
+    type: REFRESHDATA
+  }
 }
 
-export function setVisibilityFilter(filter) {
-  return { type: SET_VISIBILITY_FILTER, filter }
+export const getSuccess = (json) => {
+  return {
+    type: GETSUCCESS,
+    json
+  }
 }

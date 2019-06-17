@@ -1,42 +1,27 @@
-import {
-    ADD_TODO,
-    TOGGLE_TODO,
-    SET_VISIBILITY_FILTER,
-    VisibilityFilters
-} from './actions'
+// reducers/count.js
+import { INCREASE, DECREASE, GETSUCCESS, REFRESHDATA, INCREASEDUTIES } from '../constants' // 引入action类型常量名
 
+// 初始化state数据
 const initialState = {
-    visibilityFilter: VisibilityFilters.SHOW_ALL,
-    todos: []
-};
+    number: 1,
+    data: [],
+    duties: []
+}
 
-function todoApp(state = initialState, action) {
+// 通过dispatch action进入
+export default function update(state = initialState, action) {
+    // 根据不同的action type进行state的更新
     switch (action.type) {
-        case SET_VISIBILITY_FILTER:
-            return Object.assign({}, state, {
-                visibilityFilter: action.filter
-            })
-        case ADD_TODO:
-            return Object.assign({}, state, {
-                todos: [
-                    ...state.todos,
-                    {
-                        text: action.text,
-                        completed: false
-                    }
-                ]
-            })
-        case TOGGLE_TODO:
-            return Object.assign({}, state, {
-                todos: state.todos.map((todo, index) => {
-                    if (index === action.index) {
-                        return Object.assign({}, todo, {
-                            completed: !todo.completed
-                        })
-                    }
-                    return todo
-                })
-            })
+        case INCREASE:
+            return Object.assign({}, state, { number: state.number + action.amount })
+        case INCREASEDUTIES:
+            return Object.assign({}, state, { duties: action.data })
+        case DECREASE:
+            return Object.assign({}, state, { number: state.number - action.amount })
+        case GETSUCCESS:
+            return Object.assign({}, state, { data: action.json })
+        case REFRESHDATA:
+            return Object.assign({}, state, { data: [] })
         default:
             return state
     }

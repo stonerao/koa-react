@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
+import { increaseDuties } from '../../rdux/action/index'
 import { Input, Icon, Table, Button, Modal, message } from 'antd';
 import axios from '../../utils/axios';
 const confirm = Modal.confirm;
-
 // rowSelection object indicates the need for row selection
 
 
 class duties extends Component {
+
     constructor() {
         super()
         this.state = {
@@ -52,15 +54,18 @@ class duties extends Component {
             }
         }).then(res => {
             if (res.code === 200) {
+                const { increaseDuties, duties } = this.props;
                 this.state.pagination.total = res.total;
                 let data = res.list.map(node => ({
                     ...node,
                     key: node.Id
                 }))
+                increaseDuties(data)
                 this.setState({
                     pagination: this.state.pagination,
                     data: data
                 })
+
             } else {
 
             }
@@ -121,7 +126,7 @@ class duties extends Component {
         // 关闭 
         this.setState({
             visible: false,
-            depName:""
+            depName: ""
         })
     }
     pageChange = e => {
@@ -159,6 +164,8 @@ class duties extends Component {
         })
     }
     search = (event) => {
+
+
         this.getList()
     }
     addUser = event => {
@@ -195,7 +202,7 @@ class duties extends Component {
             isEdit: true,
             visible: true,
             editId: record.Id,
-            depName:record.name
+            depName: record.name
         })
     }
     deleteBtn = () => {
@@ -215,9 +222,9 @@ class duties extends Component {
 
     }
     render() {
+        const { duties } = this.props;
         return (
             <div className="c-box">
-                {/* 搜索 */}
                 <div className="m-people">
                     <div>
                         <span>部门名：</span>
@@ -234,7 +241,7 @@ class duties extends Component {
                         <Button type="primary" className="m-r m-l" onClick={() => { this.addUserBtn() }}>添加</Button>
                         <Button onClick={this.deleteBtn}>删除</Button>
                     </div>
-                    <Table onChange={this.pageChange} pagination={this.state.pagination} rowSelection={this.rowSelection} columns={this.columns} dataSource={this.state.data} />
+                    <Table onChange={this.pageChange} pagination={this.state.pagination} rowSelection={this.rowSelection} columns={this.columns} dataSource={duties} />
                 </div>
                 <Modal
                     title={this.state.isEdit ? '修改部门' : '添加部门'}
@@ -255,4 +262,17 @@ class duties extends Component {
         );
     }
 }
-export default duties;
+function toProps(state) {
+    if (!state) return {};
+
+    let { duties } = state;
+
+    return {
+        duties: duties
+    }
+}
+let outputActions = {
+    increaseDuties: increaseDuties
+}
+
+export default connect(toProps, outputActions)(duties);

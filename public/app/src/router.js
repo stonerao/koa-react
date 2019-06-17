@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch, Redirect, HashRouter } from 'react-router-dom';
 import _async from './utils/async'
+import { Provider } from 'react-redux'
+import store from './rdux/store/index'
 const Home = _async(() => import('./view/home.js'));
 const Index = _async(() => import('./view/index.js'));
 const Login = _async(() => import('./view/member/login'));
@@ -15,38 +17,40 @@ const options = _async(() => import('./view/management/options'));
 const PDF = _async(() => import('./view/visualization/pdf'));
 
 const BasicRoute = () => (
-    <HashRouter>
-        <Switch>
-            <Route path="/" render={() =>
-                <Home>
-                    <Route exact path="/" render={() => (
-                        <Redirect to="/home/summary" />
-                    )} />
-                    <Route path="/home" render={() =>
-                        <Index>
-                            <Route path="/home/summary" component={summary}></Route>
-                            <Route path="/home/people" component={People}></Route>
-                            <Route path="/home/duties" component={Duties}></Route>
-                            <Route path="/home/articleUp" component={articleUp}></Route>
-                            <Route path="/home/article" component={article}></Route>
-                            <Route path="/home/goods" component={goods}></Route>
-                            <Route path="/home/options" component={options}></Route>
-                            <Route path="/home/pdf" component={PDF}></Route>
-                        </Index>
-                    }>
-                    </Route>
-                </Home>
-            }></Route>
-            <Route path="/login" component={Login}></Route>
-            <Route path="/reg" component={Reg}></Route>
+    <Provider store={store}> 
+        <HashRouter>
+            <Switch>
+                <Route path="/" render={() =>
+                    <Home>
+                        <Route exact path="/" render={() => (
+                            <Redirect to="/home/summary" />
+                        )} />
+                        <Route path="/home" render={() =>
+                            <Index>
+                                <Route path="/home/summary" component={summary}></Route>
+                                <Route path="/home/people" component={People}></Route>
+                                <Route path="/home/duties" component={Duties}></Route>
+                                <Route path="/home/articleUp" component={articleUp}></Route>
+                                <Route path="/home/article" component={article}></Route>
+                                <Route path="/home/goods" component={goods}></Route>
+                                <Route path="/home/options" component={options}></Route>
+                                <Route path="/home/pdf" component={PDF}></Route>
+                            </Index>
+                        }>
+                        </Route>
+                    </Home>
+                }></Route>
+                <Route path="/login" component={Login}></Route>
+                <Route path="/reg" component={Reg}></Route>
 
-            {/* <Route path="/menu" render={() =>
+                {/* <Route path="/menu" render={() =>
                 <Home>
                     <Route path="/menu/item1/:id" component={Index}></Route>
                 </Home>
             }></Route> */}
-        </Switch>
-    </HashRouter>
+            </Switch>
+        </HashRouter>
+    </Provider>
 );
 
 export default BasicRoute;
